@@ -5,8 +5,12 @@ lazy val root = project
   .settings(
     name := "influencer2",
     version := "0.1.0-SNAPSHOT",
-
     scalaVersion := scala3Version,
-
-    libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test
+    libraryDependencies ++= Seq(
+      "dev.zio" %% "zio" % "2.0.10",
+      "dev.zio" %% "zio-test" % "2.0.10" % Test,
+      "dev.zio" %% "zio-test-sbt" % "2.0.10" % Test,
+      "dev.zio" %% "zio-test-magnolia" % "2.0.10" % Test
+    ),
+    testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
   )
