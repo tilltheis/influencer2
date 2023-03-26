@@ -9,7 +9,8 @@ Another practice project that implements an Instagram style feed.
 
 ## Features
 * post something (picture + message)
+* show feed
 * like posts
-* follow other users (tell user what they missed since they last checked their notifications)
-* login (hard-coded users first)
-* registration (maybe later)
+* follow other users (+notify followed user)
+* login
+* registration
