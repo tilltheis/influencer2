@@ -3,7 +3,7 @@ package influencer2.user
 import influencer2.user.UserDao.UserAlreadyExists
 import influencer2.user.UserService.UserCreationConflict
 import org.mindrot.jbcrypt.BCrypt
-import zio.{IO, ZIO}
+import zio.{IO, URLayer, ZIO, ZLayer}
 
 class UserService(userDao: UserDao):
   def createUser(createUser: CreateUser): IO[UserCreationConflict.type, User] = for
@@ -21,3 +21,5 @@ end UserService
 
 object UserService:
   case object UserCreationConflict
+
+  val layer: URLayer[UserDao, UserService] = ZLayer.fromFunction(UserService(_))
