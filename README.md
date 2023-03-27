@@ -8,7 +8,7 @@ Another practice project that implements an Instagram style feed.
 * MongoDB
 
 ## Features
-* post something (picture + message)
+* create posts (picture + message)
 * show feed
 * like posts
 * follow other users (+notify followed user)
