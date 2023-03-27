@@ -14,6 +14,6 @@ object DatabaseModule:
       for
         client   <- ZMongoClient.fromConnectionString(s"mongodb://root:example@localhost:27017/$params")
         database <- client.getDatabase("influencer2")
-        _        <- database.runCommand(Document("ping" -> BsonValue.Null))
+        _        <- database.runCommand(Document("ping" -> BsonValue.int(1)))
       yield DatabaseModule(database)
     }

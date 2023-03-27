@@ -4,8 +4,8 @@ import com.mongodb.client.model.FindOneAndUpdateOptions
 import influencer2.user.UserDao.UserAlreadyExists
 import mongo4cats.bson.Document
 import mongo4cats.operations.{Filter, Update}
-import mongo4cats.zio.ZMongoCollection
-import zio.{IO, ZIO}
+import mongo4cats.zio.{ZMongoCollection, ZMongoDatabase}
+import zio.{IO, RLayer, ZIO, ZLayer}
 
 import java.util.UUID
 
@@ -35,3 +35,11 @@ class MongoUserDao(collection: ZMongoCollection[Document]) extends UserDao:
         case None => ZIO.succeed(user)
       }
 end MongoUserDao
+
+object MongoUserDao:
+  val layer: RLayer[ZMongoDatabase, MongoUserDao] = ZLayer {
+    for
+      database   <- ZIO.service[ZMongoDatabase]
+      collection <- database.getCollection("users")
+    yield MongoUserDao(collection)
+  }

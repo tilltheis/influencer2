@@ -8,9 +8,9 @@ import zio.test.*
 import java.util.UUID
 
 object UserServiceSpec extends ZIOSpecDefault {
-  override def spec: Spec[Any, Any] = suite(UserServiceSpec.getClass.getSimpleName)(
+  override def spec: Spec[Any, Any] = suite(getClass.getSimpleName)(
     suite("createUser")(
-      test("creates new user if username is not taken") {
+      test("creates new user if username is available") {
         for
           userService           <- ZIO.service[UserService]
           expectedUuid          <- ZIO.random.flatMap(_.nextUUID)
