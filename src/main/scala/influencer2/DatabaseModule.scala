@@ -2,7 +2,7 @@ package influencer2
 
 import mongo4cats.bson.{BsonValue, Document}
 import mongo4cats.zio.{ZMongoClient, ZMongoDatabase}
-import zio.{TaskLayer, ZLayer}
+import zio.{TaskLayer, URLayer, ZLayer}
 
 case class DatabaseModule(database: ZMongoDatabase)
 
@@ -17,3 +17,5 @@ object DatabaseModule:
         _        <- database.runCommand(Document("ping" -> BsonValue.int(1)))
       yield DatabaseModule(database)
     }
+
+  val databaseLayer: URLayer[DatabaseModule, ZMongoDatabase] = ZLayer.fromFunction((_: DatabaseModule).database)

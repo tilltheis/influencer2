@@ -1,6 +1,6 @@
 package influencer2
 
-import zio.{Cause, RLayer, Trace, UIO, ZIO, ZLayer}
+import zio.{Cause, RLayer, Trace, UIO, ZEnvironment, ZIO, ZLayer}
 import zio.http.{Handler, HttpAppMiddleware, Request, RequestHandlerMiddleware, Response, Server}
 
 case class HttpModule(server: Server)
@@ -8,14 +8,16 @@ case class HttpModule(server: Server)
 object HttpModule:
   val layer: RLayer[UserModule, HttpModule] =
     val zio = for
-      userModule <- ZIO.service[UserModule]
-      server     <- ZIO.service[Server]
-      httpApp = loggingHttpApp(AppRouter(userModule.userService))
+      appRouter <- ZIO.service[AppRouter]
+      server    <- ZIO.service[Server]
+      httpApp = loggingHttpApp(appRouter)
       _ <- server.install(httpApp, Some(errorCallback))
       _ <- ZIO.log(s"HTTP server listening on port ${server.port}")
       _ <- ZIO.addFinalizer(ZIO.log("HTTP server shut down"))
     yield HttpModule(server)
-    Server.default >>> ZLayer.scoped(zio)
+
+    (Server.default ++ (UserModule.userServiceLayer >>> AppRouter.layer)) >>> ZLayer.scoped(zio)
+  end layer
 
   private val correlationIdLogAnnotationMiddleware: RequestHandlerMiddleware[Nothing, Any, Nothing, Any] =
     new RequestHandlerMiddleware.Simple[Any, Nothing]:

@@ -1,7 +1,7 @@
 package influencer2
 
 import influencer2.user.{CreateUser, UserService}
-import zio.{UIO, ZIO}
+import zio.{UIO, URLayer, ZIO, ZLayer}
 import zio.http.model.{Method, Status}
 import zio.http.*
 
@@ -34,3 +34,6 @@ class AppRouter(userService: UserService):
   private def dummyResponse(request: Request): UIO[Response] =
     ZIO.succeed(Response.text(s"${request.method} ${request.url.toJavaURI}"))
 end AppRouter
+
+object AppRouter:
+  val layer: URLayer[UserService, AppRouter] = ZLayer.fromFunction(AppRouter(_))
