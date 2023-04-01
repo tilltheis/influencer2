@@ -1,11 +1,20 @@
 package influencer2
 
+import influencer2.http.{AppController, AppRouter, JwtCodec}
 import zio.{Cause, RLayer, Trace, UIO, ZEnvironment, ZIO, ZLayer}
 import zio.http.{Handler, HttpAppMiddleware, Request, RequestHandlerMiddleware, Response, Server}
+
+import java.util.Base64
+import javax.crypto.spec.SecretKeySpec
 
 case class HttpModule(server: Server)
 
 object HttpModule:
+  // should come from config/secret store
+  private val jwtSigningKey: SecretKeySpec =
+    val base64Key = "XAtCdfixJz9JPJOsynaqTSkZp8TbHXDKgaFWWw72t+Q="
+    new SecretKeySpec(Base64.getDecoder.decode(base64Key.getBytes("UTF-8")), "HmacSHA256")
+
   val layer: RLayer[UserModule, HttpModule] =
     val zio = for
       appRouter <- ZIO.service[AppRouter]
@@ -16,7 +25,9 @@ object HttpModule:
       _ <- ZIO.addFinalizer(ZIO.log("HTTP server shut down"))
     yield HttpModule(server)
 
-    (Server.default ++ (UserModule.userServiceLayer >>> AppRouter.layer)) >>> ZLayer.scoped(zio)
+    val appRouterLayer =
+      (UserModule.userServiceLayer ++ JwtCodec.layer(jwtSigningKey)) >>> AppController.layer >>> AppRouter.layer
+    (Server.default ++ appRouterLayer) >>> ZLayer.scoped(zio)
   end layer
 
   private val correlationIdLogAnnotationMiddleware: RequestHandlerMiddleware[Nothing, Any, Nothing, Any] =
@@ -40,4 +51,5 @@ object HttpModule:
     allLoggingHttpApp.withDefaultErrorResponse
 
   private def errorCallback(cause: Cause[Nothing]): UIO[Unit] = ZIO.logErrorCause("unhandled error", cause)
+
 end HttpModule

@@ -9,7 +9,7 @@ class UserService(userDao: UserDao):
   def createUser(createUser: CreateUser): IO[UserCreationConflict.type, User] = for
     userId       <- UserId.random
     passwordHash <- ZIO.succeedBlocking(BCrypt.hashpw(createUser.password, BCrypt.gensalt()))
-    newUser = User(userId, createUser.name, passwordHash)
+    newUser = User(userId, createUser.username, passwordHash)
     user <- userDao.createUser(newUser).catchAll { case UserAlreadyExists(oldUser) =>
       ZIO.ifZIO(ZIO.succeedBlocking(BCrypt.checkpw(createUser.password, oldUser.passwordHash)))(
         ZIO.succeed(oldUser),
@@ -17,6 +17,14 @@ class UserService(userDao: UserDao):
       )
     }
   yield user
+
+  def login(username: String, password: String): IO[InvalidCredentials.type, User] =
+    userDao.loadUser(username).someOrFail(InvalidCredentials).flatMap { user =>
+      ZIO.ifZIO(ZIO.succeedBlocking(BCrypt.checkpw(password, user.passwordHash)))(
+        ZIO.succeed(user),
+        ZIO.fail(InvalidCredentials)
+      )
+    }
 end UserService
 
 object UserService:

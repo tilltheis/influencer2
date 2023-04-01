@@ -5,7 +5,7 @@ import influencer2.user.UserDao.UserAlreadyExists
 import mongo4cats.bson.Document
 import mongo4cats.operations.{Filter, Update}
 import mongo4cats.zio.{ZMongoCollection, ZMongoDatabase}
-import zio.{IO, RLayer, ZIO, ZLayer}
+import zio.{IO, RLayer, UIO, ZIO, ZLayer}
 
 import java.util.UUID
 
@@ -13,10 +13,10 @@ class MongoUserDao(collection: ZMongoCollection[Document]) extends UserDao:
   override def createUser(user: User): IO[UserAlreadyExists, User] =
     collection
       .findOneAndUpdate(
-        Filter.eq("name", user.name),
+        Filter.eq("name", user.username),
         Update
           .setOnInsert("_id", user.id.value.toString)
-          .setOnInsert("name", user.name)
+          .setOnInsert("name", user.username)
           .setOnInsert("passwordHash", user.passwordHash),
         FindOneAndUpdateOptions().upsert(true)
       )
@@ -34,6 +34,15 @@ class MongoUserDao(collection: ZMongoCollection[Document]) extends UserDao:
           )
         case None => ZIO.succeed(user)
       }
+
+  override def loadUser(username: String): UIO[Option[User]] =
+    collection.find(Filter.eq("name", username)).first.orDie.map(_.map { document =>
+      User(
+        UserId(UUID.fromString(document.get("_id").get.asString.get)),
+        document.get("name").get.asString.get,
+        document.get("passwordHash").get.asString.get
+      )
+    })
 end MongoUserDao
 
 object MongoUserDao:
