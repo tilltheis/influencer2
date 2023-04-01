@@ -1,6 +1,7 @@
 package influencer2.http
 
-import influencer2.http.AppController.{JwtHeaderPayloadCookieName, JwtSignatureCookieName, UseSecureCookies}
+import influencer2.http.{JwtHeaderPayloadCookieName, JwtSignatureCookieName}
+import influencer2.http.AppController.UseSecureCookies
 import influencer2.http.AppJsonCodec.given
 import influencer2.user.{CreateUser, UserService}
 import zio.http.model.{Cookie, Status}
@@ -50,6 +51,14 @@ class AppController(jwtCodec: JwtCodec, userService: UserService):
     }
   end handleCreateSession
 
+  def handleDeleteSession(request: Request): UIO[Response] =
+    ZIO.succeed(
+      Response
+        .status(Status.Ok)
+        .addCookie(Cookie.clear(JwtHeaderPayloadCookieName))
+        .addCookie(Cookie.clear(JwtSignatureCookieName))
+    )
+
   private def withJsonRequest[A: JsonDecoder](request: Request)(f: A => UIO[Response]): UIO[Response] =
     val withJsonContentType =
       if request.hasJsonContentType then ZIO.succeed(request)
@@ -66,9 +75,6 @@ class AppController(jwtCodec: JwtCodec, userService: UserService):
 end AppController
 
 object AppController:
-  private val JwtSignatureCookieName     = "jwt-signature"
-  private val JwtHeaderPayloadCookieName = "jwt-header.payload"
-
   private val UseSecureCookies = false // should come from config
 
   val layer: URLayer[JwtCodec & UserService, AppController] = ZLayer {

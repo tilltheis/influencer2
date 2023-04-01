@@ -1,7 +1,8 @@
 package influencer2
 
 import influencer2.http.{AppController, AppRouter, JwtCodec}
-import zio.{Cause, RLayer, Trace, UIO, ZEnvironment, ZIO, ZLayer}
+import zio.http.model.Status
+import zio.{Cause, RLayer, Trace, UIO, ULayer, ZIO, ZLayer}
 import zio.http.{Handler, HttpAppMiddleware, Request, RequestHandlerMiddleware, Response, Server}
 
 import java.util.Base64
@@ -10,11 +11,6 @@ import javax.crypto.spec.SecretKeySpec
 case class HttpModule(server: Server)
 
 object HttpModule:
-  // should come from config/secret store
-  private val jwtSigningKey: SecretKeySpec =
-    val base64Key = "XAtCdfixJz9JPJOsynaqTSkZp8TbHXDKgaFWWw72t+Q="
-    new SecretKeySpec(Base64.getDecoder.decode(base64Key.getBytes("UTF-8")), "HmacSHA256")
-
   val layer: RLayer[UserModule, HttpModule] =
     val zio = for
       appRouter <- ZIO.service[AppRouter]
@@ -25,10 +21,15 @@ object HttpModule:
       _ <- ZIO.addFinalizer(ZIO.log("HTTP server shut down"))
     yield HttpModule(server)
 
-    val appRouterLayer =
-      (UserModule.userServiceLayer ++ JwtCodec.layer(jwtSigningKey)) >>> AppController.layer >>> AppRouter.layer
-    (Server.default ++ appRouterLayer) >>> ZLayer.scoped(zio)
+    val appRouterLayer = UserModule.userServiceLayer >+> jwtCodecLayer >+> AppController.layer >>> AppRouter.layer
+    Server.default ++ appRouterLayer >>> ZLayer.scoped(zio)
   end layer
+
+  private def jwtCodecLayer: ULayer[JwtCodec] =
+    // should come from config/secret store
+    val base64Key = "XAtCdfixJz9JPJOsynaqTSkZp8TbHXDKgaFWWw72t+Q="
+    val key       = new SecretKeySpec(Base64.getDecoder.decode(base64Key.getBytes("UTF-8")), "HmacSHA256")
+    JwtCodec.layer(key)
 
   private val correlationIdLogAnnotationMiddleware: RequestHandlerMiddleware[Nothing, Any, Nothing, Any] =
     new RequestHandlerMiddleware.Simple[Any, Nothing]:
