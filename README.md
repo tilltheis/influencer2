@@ -14,3 +14,7 @@ Another practice project that implements an Instagram style feed.
 * follow other users (+notify followed user)
 * login
 * registration
+
+## Security
+* __XSS__ protection is achieved by storing the JWT signature in an HTTP only cookie that cannot be read by the client.
+* __CSRF__ protection is not necessary because the authentication token is sent via an HTTP header.

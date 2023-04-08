@@ -1,6 +1,6 @@
 package influencer2.http
 
-import influencer2.http.{JwtHeaderPayloadCookieName, JwtSignatureCookieName}
+import influencer2.http.JwtSignatureCookieName
 import influencer2.http.AppController.UseSecureCookies
 import influencer2.http.AppJsonCodec.given
 import influencer2.user.{CreateUser, UserService}
@@ -22,7 +22,7 @@ class AppController(jwtCodec: JwtCodec, userService: UserService):
       )
 
   def handleCreateSession(request: Request): UIO[Response] =
-    withJsonRequest[Login](request) { login =>
+    withJsonRequest[LoginRequest](request) { login =>
       userService.login(login.username, login.password).either.flatMap {
         case Left(invalidCredentials) =>
           ZIO.succeed(Response.json(invalidCredentials.toJson).setStatus(Status.Unauthorized))
@@ -34,6 +34,7 @@ class AppController(jwtCodec: JwtCodec, userService: UserService):
             sessionUser      = SessionUser.fromUser(user)
             (header, payload, signature) <-
               jwtCodec.encodeJwtIntoHeaderPayloadSignature(sessionUser.toJson, expiresAt.toInstant)
+            loginResponse = LoginResponse(s"$header.$payload")
           yield
             def makeCookie(name: String, content: String, isHttpOnly: Boolean) = Cookie(
               name,
@@ -44,20 +45,14 @@ class AppController(jwtCodec: JwtCodec, userService: UserService):
             )
 
             Response
-              .status(Status.Ok)
+              .json(loginResponse.toJson)
               .addCookie(makeCookie(JwtSignatureCookieName, signature, isHttpOnly = true))
-              .addCookie(makeCookie(JwtHeaderPayloadCookieName, s"$header.$payload", isHttpOnly = false))
       }
     }
   end handleCreateSession
 
   def handleDeleteSession(request: Request): UIO[Response] =
-    ZIO.succeed(
-      Response
-        .status(Status.Ok)
-        .addCookie(Cookie.clear(JwtHeaderPayloadCookieName))
-        .addCookie(Cookie.clear(JwtSignatureCookieName))
-    )
+    ZIO.succeed(Response.status(Status.Ok).addCookie(Cookie.clear(JwtSignatureCookieName)))
 
   private def withJsonRequest[A: JsonDecoder](request: Request)(f: A => UIO[Response]): UIO[Response] =
     val withJsonContentType =
@@ -75,7 +70,7 @@ class AppController(jwtCodec: JwtCodec, userService: UserService):
 end AppController
 
 object AppController:
-  private val UseSecureCookies = false // should come from config
+  private val UseSecureCookies = false // should come from config or be set by reverse proxy
 
   val layer: URLayer[JwtCodec & UserService, AppController] = ZLayer {
     for

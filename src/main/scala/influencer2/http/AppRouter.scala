@@ -35,8 +35,8 @@ class AppRouter(jwtCodec: JwtCodec, appController: AppController):
   private def authenticate(authenticatedRoutes: SessionUser => UHttpApp): UHttpApp =
     Http.fromHttpZIO { (request: Request) =>
       val zio = for
-        headerPayload     <- ZIO.from(request.cookieValue(JwtHeaderPayloadCookieName))
-        (header, payload) <- ZIO.succeed(headerPayload.toString.split('.')).collect(()) { case Array(x, y) => (x, y) }
+        headerPayload     <- ZIO.from(request.bearerToken)
+        (header, payload) <- ZIO.succeed(headerPayload.split('.')).collect(()) { case Array(x, y) => (x, y) }
         signature         <- ZIO.from(request.cookieValue(JwtSignatureCookieName))
         claim             <- jwtCodec.decodeJwtFromHeaderPayloadSignature(header, payload, signature.toString)
         sessionUser       <- ZIO.from(claim.fromJson[SessionUser])
