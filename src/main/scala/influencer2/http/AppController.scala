@@ -24,8 +24,8 @@ class AppController(jwtCodec: JwtCodec, userService: UserService):
   def handleCreateSession(request: Request): UIO[Response] =
     withJsonRequest[LoginRequest](request) { login =>
       userService.login(login.username, login.password).either.flatMap {
-        case Left(invalidCredentials) =>
-          ZIO.succeed(Response.json(invalidCredentials.toJson).setStatus(Status.Unauthorized))
+        case Left(_) =>
+          ZIO.succeed(Response.json(ErrorResponse("invalid credentials").toJson).setStatus(Status.Unauthorized))
         case Right(user) =>
           for
             now <- zio.Clock.currentDateTime
