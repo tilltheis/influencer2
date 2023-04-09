@@ -1,12 +1,12 @@
 package influencer2
 
 import influencer2.HttpTestHelpers.parseJson
-import influencer2.TestRequest.*
+import influencer2.TestRequest.{delete, post, put}
+import zio.Clock
 import zio.http.!!
 import zio.http.model.{Cookie, Status}
 import zio.json.ast.JsonCursor
-import zio.test.*
-import zio.{Clock, IO, ZIO, http}
+import zio.test.{Spec, ZIOSpecDefault, assertTrue, suite, test}
 
 import java.util.concurrent.TimeUnit
 

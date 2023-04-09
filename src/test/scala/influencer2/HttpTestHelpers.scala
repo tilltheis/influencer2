@@ -62,42 +62,4 @@ object TestResponse:
 case class TestAuth(token: String, signature: String)
 
 object HttpTestHelpers:
-  val DefaultRequestFailure: String = "request failed"
-
-  def putRequest(jsonBody: String, path: Path): Request =
-    Request
-      .put(Body.fromString(jsonBody), URL(path))
-      .addHeader(HeaderNames.contentType, HeaderValues.applicationJson)
-
-  def postRequest(jsonBody: String, path: Path): Request =
-    Request
-      .post(Body.fromString(jsonBody), URL(path))
-      .addHeader(HeaderNames.contentType, HeaderValues.applicationJson)
-
-  def getRequest(path: Path): Request = Request.get(URL(path))
-
-  def runRequest(request: Request, orElseFailWith: String = DefaultRequestFailure): ZIO[AppRouter, Any, TestResponse] =
-    ZIO
-      .service[AppRouter]
-      .flatMap(_.routes.runZIO(request).orElseFail(orElseFailWith))
-      .flatMap(TestResponse.fromResponse)
-
-  def runPutRequest(
-      jsonBody: String,
-      path: Path,
-      orElseFailWith: String = DefaultRequestFailure
-  ): ZIO[AppRouter, Any, TestResponse] =
-    runRequest(putRequest(jsonBody, path), orElseFailWith)
-
-  def runPostRequest(
-      jsonBody: String,
-      path: Path,
-      orElseFailWith: String = DefaultRequestFailure
-  ): ZIO[AppRouter, Any, TestResponse] =
-    runRequest(postRequest(jsonBody, path), orElseFailWith)
-
-  def runGetRequest(path: Path, orElseFailWith: String = DefaultRequestFailure): ZIO[AppRouter, Any, TestResponse] =
-    runRequest(getRequest(path), orElseFailWith)
-
   def parseJson(jsonString: String): IO[String, Json] = ZIO.from(jsonString.fromJson[Json])
-end HttpTestHelpers
