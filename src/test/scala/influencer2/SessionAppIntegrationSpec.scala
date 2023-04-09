@@ -56,6 +56,10 @@ object SessionAppIntegrationSpec extends ZIOSpecDefault:
             logoutResponse.jsonBody == expectedResponseJson &&
             logoutResponse.setCookieDecoded("jwt-signature") == Some(expectedCookie)
         )
+      },
+      test("does not exist if the user is not logged in") {
+        for response <- delete(!! / "sessions").run.either
+        yield assertTrue(response.isLeft)
       }
     )
   ).provide(TestRouter.layer)
