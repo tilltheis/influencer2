@@ -2,8 +2,8 @@ package influencer2.http
 
 import influencer2.http.AppJsonCodec.given_JsonCodec_SessionUser
 import influencer2.user.UserService
-import zio.http.*
 import zio.http.model.{Method, Status}
+import zio.http.*
 import zio.json.DecoderOps
 import zio.{UIO, URLayer, ZIO, ZLayer}
 

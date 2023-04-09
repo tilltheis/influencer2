@@ -8,6 +8,7 @@ import zio.{IO, RLayer, UIO, ZIO, ZLayer}
 
 import java.util.UUID
 
+@SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
 class MongoUserDao(collection: ZMongoCollection[Document]) extends UserDao:
   override def createUser(user: User): IO[UserAlreadyExists, User] =
     collection

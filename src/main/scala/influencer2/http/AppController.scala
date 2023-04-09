@@ -59,7 +59,13 @@ class AppController(jwtCodec: JwtCodec, userService: UserService):
   end handleCreateSession
 
   def handleDeleteSession(request: Request): UIO[Response] =
-    ZIO.succeed(Response.status(Status.Ok).addCookie(Cookie.clear(JwtSignatureCookieName)))
+    // ideally, this would also blacklist the not yet expired tokens
+    ZIO.succeed(
+      Response
+        .json(ErrorResponse("logged out").toJson)
+        .setStatus(Status.Ok)
+        .addCookie(Cookie.clear(JwtSignatureCookieName).withHttpOnly)
+    )
 
   private def withJsonRequest[A: JsonDecoder](request: Request)(f: A => UIO[Response]): UIO[Response] =
     val withJsonContentType =

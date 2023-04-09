@@ -24,6 +24,5 @@ lazy val root = project
       "com.github.jwt-scala" %% "jwt-core"                  % "9.2.0"
     ),
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"),
-    wartremoverErrors ++= Warts.unsafe
-      .filterNot(Set(Wart.Any, Wart.TripleQuestionMark, Wart.DefaultArguments, Wart.OptionPartial).contains)
+    wartremoverErrors ++= Warts.unsafe.filterNot(Set(Wart.Any, Wart.TripleQuestionMark, Wart.DefaultArguments).contains)
   )
