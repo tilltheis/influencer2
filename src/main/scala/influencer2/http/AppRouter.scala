@@ -23,7 +23,8 @@ class AppRouter(jwtCodec: JwtCodec, appController: AppController):
   }
 
   private val publicRoutes: UHttpApp = Http.collectZIO[Request] {
-    case request @ Method.PUT -> !! / "users" / username => appController.handleCreateUser(request)
+    case request @ Method.PUT -> !! / "users" / username => appController.handleCreateUser(username, request)
+    case Method.GET -> !! / "users" / username           => appController.handleReadUser(username)
 
     case request @ Method.POST -> !! / "sessions" => appController.handleCreateSession(request)
 

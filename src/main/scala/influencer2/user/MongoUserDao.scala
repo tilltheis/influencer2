@@ -1,7 +1,6 @@
 package influencer2.user
 
 import com.mongodb.client.model.FindOneAndUpdateOptions
-import influencer2.user.UserDao.UserAlreadyExists
 import mongo4cats.bson.Document
 import mongo4cats.operations.{Filter, Update}
 import mongo4cats.zio.{ZMongoCollection, ZMongoDatabase}
@@ -35,14 +34,14 @@ class MongoUserDao(collection: ZMongoCollection[Document]) extends UserDao:
         case None => ZIO.succeed(user)
       }
 
-  override def loadUser(username: String): UIO[Option[User]] =
-    collection.find(Filter.eq("name", username)).first.orDie.map(_.map { document =>
+  override def loadUser(username: String): IO[UserNotFound.type, User] =
+    collection.find(Filter.eq("name", username)).first.orDie.someOrFail(UserNotFound).map { document =>
       User(
         UserId(UUID.fromString(document.get("_id").get.asString.get)),
         document.get("name").get.asString.get,
         document.get("passwordHash").get.asString.get
       )
-    })
+    }
 end MongoUserDao
 
 object MongoUserDao:

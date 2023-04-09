@@ -1,24 +1,31 @@
 package influencer2.http
 
-import influencer2.http.JwtSignatureCookieName
 import influencer2.http.AppController.UseSecureCookies
 import influencer2.http.AppJsonCodec.given
-import influencer2.user.{CreateUser, UserService}
+import influencer2.http.JwtSignatureCookieName
+import influencer2.user.UserService
 import zio.http.model.{Cookie, Status}
 import zio.http.{Request, Response}
 import zio.json.{DecoderOps, EncoderOps, JsonDecoder}
 import zio.{UIO, URLayer, ZIO, ZLayer}
 
-import java.util.Base64
-import javax.crypto.spec.SecretKeySpec
-
 class AppController(jwtCodec: JwtCodec, userService: UserService):
-  def handleCreateUser(request: Request): UIO[Response] =
+  def handleCreateUser(username: String, request: Request): UIO[Response] =
+    withJsonRequest[CreateUserRequest](request) { createUser =>
+      userService
+        .createUser(username, createUser.password)
+        .fold(
+          _ => Response.json(ErrorResponse("username already taken").toJson).setStatus(Status.Conflict),
+          user => Response.json(UserResponse.fromUser(user).toJson).setStatus(Status.Created)
+        )
+    }
+
+  def handleReadUser(username: String): UIO[Response] =
     userService
-      .createUser(CreateUser("till", "passwordHash"))
+      .readUser(username)
       .fold(
-        _ => Response.status(Status.Conflict),
-        _ => Response.text("user created").setStatus(Status.Created)
+        _ => Response.json(ErrorResponse("user not found").toJson).setStatus(Status.NotFound),
+        user => Response.json(UserResponse.fromUser(user).toJson)
       )
 
   def handleCreateSession(request: Request): UIO[Response] =
