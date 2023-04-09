@@ -6,7 +6,7 @@ import zio.{TaskLayer, ZIO, ZLayer}
 
 object TestDatabase:
   // creates a randomly named database and drops it when it goes out of scope
-  def layer: TaskLayer[ZMongoDatabase] =
+  val layer: TaskLayer[ZMongoDatabase] =
     // all the values below should come from a config/secret store/...
     ZLayer.scoped {
       val params = "?connectTimeoutMS=1000&socketTimeoutMS=1000&serverSelectionTimeoutMS=1000"

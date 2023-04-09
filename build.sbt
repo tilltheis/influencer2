@@ -6,7 +6,7 @@ lazy val root = project
     name         := "influencer2",
     version      := "0.1.0-SNAPSHOT",
     scalaVersion := scala3Version,
-    scalacOptions ++= Seq("-source:future", "-Werror", "-Wunused:all"),
+    scalacOptions ++= Seq("-source:future", "-Werror", "-Wunused:all", "-deprecation"),
     libraryDependencies ++= Seq(
       "dev.zio"              %% "zio"                       % "2.0.10",
       "dev.zio"              %% "zio-http"                  % "0.0.5",

@@ -1,6 +1,6 @@
 package influencer2.http
 
-import zio.{IO, UIO, ULayer, ZIO, ZLayer}
+import zio.{IO, UIO, URLayer, ZIO, ZLayer}
 import pdi.jwt.{Jwt, JwtAlgorithm, JwtClaim, JwtHeader, JwtOptions}
 
 import java.time.Instant
@@ -42,4 +42,4 @@ end JwtCodec
 object InvalidJwtFormat
 
 object JwtCodec:
-  def layer(jwtSigningKey: SecretKey): ULayer[JwtCodec] = ZLayer.succeed(JwtCodec(jwtSigningKey))
+  val layer: URLayer[SecretKey, JwtCodec] = ZLayer.fromFunction(JwtCodec(_))

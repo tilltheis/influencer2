@@ -26,6 +26,6 @@ object MongoUserDaoSpec extends ZIOSpecDefault {
           userAlreadyExists <- userDao.createUser(user).flip
         yield assertTrue(userAlreadyExists.user == user)
       }
-    ).provide(MongoUserDao.layer, TestDatabase.layer)
-  )
+    )
+  ).provide(MongoUserDao.layer, TestDatabase.layer)
 }

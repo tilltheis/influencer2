@@ -15,4 +15,4 @@ class InMemoryUserDao(state: Ref[Map[String, User]]) extends UserDao:
   def loadUser(username: String): UIO[Option[User]] = state.get.map(_.get(username))
 
 object InMemoryUserDao:
-  def layer: ULayer[InMemoryUserDao] = ZLayer(Ref.make(Map.empty).map(InMemoryUserDao(_)))
+  val layer: ULayer[InMemoryUserDao] = ZLayer(Ref.make(Map.empty).map(InMemoryUserDao(_)))

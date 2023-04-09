@@ -1,11 +1,11 @@
 package influencer2.http
 
+import influencer2.http.AppJsonCodec.given_JsonCodec_SessionUser
 import influencer2.user.UserService
-import zio.{UIO, URLayer, ZIO, ZLayer}
 import zio.http.*
 import zio.http.model.{Method, Status}
 import zio.json.DecoderOps
-import AppJsonCodec.given_JsonCodec_SessionUser
+import zio.{UIO, URLayer, ZIO, ZLayer}
 
 class AppRouter(jwtCodec: JwtCodec, appController: AppController):
   private def privateRoutes(sessionUser: SessionUser): UHttpApp = Http.collectZIO[Request] {
