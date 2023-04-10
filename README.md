@@ -5,7 +5,7 @@ Another practice project that implements an Instagram style feed.
 * JVM 17
 * Scala 3
 * ZIO 2
-* MongoDB
+* MongoDB 6
 
 ## Features
 * create posts (picture + message)
