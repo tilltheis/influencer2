@@ -18,7 +18,7 @@ class UserService(userDao: UserDao):
 
   def readUser(username: String): IO[UserNotFound.type, User] = userDao.loadUser(username)
 
-  def login(username: String, password: String): IO[InvalidCredentials.type, User] =
+  def verifyCredentials(username: String, password: String): IO[InvalidCredentials.type, User] =
     userDao.loadUser(username).orElseFail(InvalidCredentials).flatMap { user =>
       ZIO.ifZIO(ZIO.succeedBlocking(BCrypt.checkpw(password, user.passwordHash)))(
         ZIO.succeed(user),

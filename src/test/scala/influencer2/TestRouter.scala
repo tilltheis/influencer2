@@ -1,6 +1,6 @@
 package influencer2
 
-import influencer2.http.{AppController, AppRouter, JwtCodec}
+import influencer2.http.{AppRouter, JwtCodec, SessionController, UserController}
 import influencer2.user.{MongoUserDao, UserService}
 import zio.internal.macros.LayerMacros
 import zio.{TaskLayer, ULayer, ZIO, ZLayer}
@@ -21,7 +21,8 @@ object TestRouter:
       AppRouter.layer,
       JwtCodec.layer,
       secretKeyLayer,
-      AppController.layer,
+      UserController.layer,
+      SessionController.layer,
       UserService.layer,
       MongoUserDao.layer,
       TestDatabase.layer

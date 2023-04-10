@@ -8,14 +8,14 @@ import zio.http.model.Status
 import zio.json.DecoderOps
 import zio.{UIO, URLayer, ZIO, ZLayer}
 
-class AppRouter(jwtCodec: JwtCodec, appController: AppController):
+class AppRouter(userController: UserController, sessionController: SessionController):
   private def allRoutes(sessionUserOption: Option[SessionUser]): UHttpApp = {
     val pf: PartialFunction[(Option[SessionUser], Request), UIO[Response]] = {
-      case (_, request @ PUT -> !! / "users" / username) => appController.handleCreateUser(username, request)
-      case (_, GET -> !! / "users" / username)           => appController.handleReadUser(username)
+      case (_, request @ PUT -> !! / "users" / username) => userController.handleCreateUser(username, request)
+      case (_, GET -> !! / "users" / username)           => userController.handleReadUser(username)
 
-      case (_, request @ POST -> !! / "sessions")         => appController.handleCreateSession(request)
-      case (Some(_), request @ DELETE -> !! / "sessions") => appController.handleDeleteSession(request)
+      case (_, request @ POST -> !! / "sessions") => sessionController.handleCreateSession(request)
+      case (Some(_), DELETE -> !! / "sessions")   => sessionController.handleDeleteSession
 
       case (Some(_), request @ GET -> !! / "feeds" / username) => dummyResponse(request)
 
@@ -33,16 +33,7 @@ class AppRouter(jwtCodec: JwtCodec, appController: AppController):
   }
 
   private def withSessionUser(authenticatedRoutes: Option[SessionUser] => UHttpApp): UHttpApp =
-    Http.fromHttpZIO { (request: Request) =>
-      val sessionUserZio = for
-        headerPayload     <- ZIO.from(request.bearerToken)
-        (header, payload) <- ZIO.succeed(headerPayload.split('.')).collect(()) { case Array(x, y) => (x, y) }
-        signature         <- ZIO.from(request.cookieValue(JwtSignatureCookieName))
-        claim             <- jwtCodec.decodeJwtFromHeaderPayloadSignature(header, payload, signature.toString)
-        sessionUser       <- ZIO.from(claim.fromJson[SessionUser])
-      yield sessionUser
-      sessionUserZio.option.map(authenticatedRoutes)
-    }
+    Http.fromHttpZIO(sessionController.extractSessionUser(_).map(authenticatedRoutes))
 
   val routes: UHttpApp = withSessionUser(allRoutes)
 
@@ -51,9 +42,9 @@ class AppRouter(jwtCodec: JwtCodec, appController: AppController):
 end AppRouter
 
 object AppRouter:
-  val layer: URLayer[JwtCodec & AppController, AppRouter] = ZLayer {
+  val layer: URLayer[UserController & SessionController, AppRouter] = ZLayer {
     for
-      jwtCodec      <- ZIO.service[JwtCodec]
-      appController <- ZIO.service[AppController]
-    yield AppRouter(jwtCodec, appController)
+      userController    <- ZIO.service[UserController]
+      sessionController <- ZIO.service[SessionController]
+    yield AppRouter(userController, sessionController)
   }
