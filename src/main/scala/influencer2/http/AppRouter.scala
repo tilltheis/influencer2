@@ -2,50 +2,49 @@ package influencer2.http
 
 import influencer2.http.AppJsonCodec.given_JsonCodec_SessionUser
 import influencer2.user.UserService
-import zio.http.model.{Method, Status}
 import zio.http.*
+import zio.http.model.Method.{DELETE, GET, POST, PUT}
+import zio.http.model.Status
 import zio.json.DecoderOps
 import zio.{UIO, URLayer, ZIO, ZLayer}
 
 class AppRouter(jwtCodec: JwtCodec, appController: AppController):
-  private def privateRoutes(sessionUser: SessionUser): UHttpApp = Http.collectZIO[Request] {
-    case request @ Method.DELETE -> !! / "users" / username => dummyResponse(request)
+  private def allRoutes(sessionUserOption: Option[SessionUser]): UHttpApp = {
+    val pf: PartialFunction[(Option[SessionUser], Request), UIO[Response]] = {
+      case (_, request @ PUT -> !! / "users" / username) => appController.handleCreateUser(username, request)
+      case (_, GET -> !! / "users" / username)           => appController.handleReadUser(username)
 
-    case request @ Method.DELETE -> !! / "sessions" => appController.handleDeleteSession(request)
+      case (_, request @ POST -> !! / "sessions")         => appController.handleCreateSession(request)
+      case (Some(_), request @ DELETE -> !! / "sessions") => appController.handleDeleteSession(request)
 
-    case request @ Method.GET -> !! / "feeds" / username => dummyResponse(request)
+      case (Some(_), request @ GET -> !! / "feeds" / username) => dummyResponse(request)
 
-    case request @ Method.PUT -> !! / "posts" / postId                         => dummyResponse(request)
-    case request @ Method.PUT -> !! / "posts" / postId / "likes" / username    => dummyResponse(request)
-    case request @ Method.DELETE -> !! / "posts" / postId / "likes" / username => dummyResponse(request)
+      case (Some(_), request @ PUT -> !! / "posts" / postId) => dummyResponse(request)
+      case (_, request @ GET -> !! / "posts") if request.url.queryParams.get("username").isDefined =>
+        dummyResponse(request)
+      case (_, request @ GET -> !! / "posts" / postId)                               => dummyResponse(request)
+      case (Some(_), request @ PUT -> !! / "posts" / postId / "likes" / username)    => dummyResponse(request)
+      case (Some(_), request @ DELETE -> !! / "posts" / postId / "likes" / username) => dummyResponse(request)
 
-    case request @ Method.GET -> !! / "notifications" / username => dummyResponse(request)
+      case (Some(_), request @ GET -> !! / "notifications" / username) => dummyResponse(request)
+    }
+
+    Http.collectZIO[Request](pf.compose(sessionUserOption -> _))
   }
 
-  private val publicRoutes: UHttpApp = Http.collectZIO[Request] {
-    case request @ Method.PUT -> !! / "users" / username => appController.handleCreateUser(username, request)
-    case Method.GET -> !! / "users" / username           => appController.handleReadUser(username)
-
-    case request @ Method.POST -> !! / "sessions" => appController.handleCreateSession(request)
-
-    case request @ Method.GET -> !! / "posts" if request.url.queryParams.get("username").isDefined =>
-      dummyResponse(request)
-    case request @ Method.GET -> !! / "posts" / postId => dummyResponse(request)
-  }
-
-  private def authenticate(authenticatedRoutes: SessionUser => UHttpApp): UHttpApp =
+  private def withSessionUser(authenticatedRoutes: Option[SessionUser] => UHttpApp): UHttpApp =
     Http.fromHttpZIO { (request: Request) =>
-      val zio = for
+      val sessionUserZio = for
         headerPayload     <- ZIO.from(request.bearerToken)
         (header, payload) <- ZIO.succeed(headerPayload.split('.')).collect(()) { case Array(x, y) => (x, y) }
         signature         <- ZIO.from(request.cookieValue(JwtSignatureCookieName))
         claim             <- jwtCodec.decodeJwtFromHeaderPayloadSignature(header, payload, signature.toString)
         sessionUser       <- ZIO.from(claim.fromJson[SessionUser])
-      yield authenticatedRoutes(sessionUser)
-      zio.orElseSucceed(Http.empty)
+      yield sessionUser
+      sessionUserZio.option.map(authenticatedRoutes)
     }
 
-  val routes: UHttpApp = publicRoutes ++ authenticate(privateRoutes)
+  val routes: UHttpApp = withSessionUser(allRoutes)
 
   private def dummyResponse(request: Request): UIO[Response] =
     ZIO.succeed(Response.text(s"${request.method} ${request.url.toJavaURI}"))
