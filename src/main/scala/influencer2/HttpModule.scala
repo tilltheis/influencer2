@@ -1,6 +1,7 @@
 package influencer2
 
-import influencer2.http.{AppRouter, JwtCodec, SessionController, UserController}
+import influencer2.http.{AppRouter, JwtCodec, PostController, SessionController, UserController}
+import influencer2.post.PostService
 import influencer2.user.UserService
 import zio.http.model.Status
 import zio.{Cause, RLayer, Scope, Trace, UIO, ULayer, ZIO, ZLayer}
@@ -16,7 +17,7 @@ object HttpModule:
     val key       = new SecretKeySpec(Base64.getDecoder.decode(base64Key.getBytes("UTF-8")), "HmacSHA256")
     ZLayer.succeed(key) >>> JwtCodec.layer
 
-  val layer: RLayer[UserService, Server] =
+  val layer: RLayer[UserService & PostService, Server] =
     val zio = for
       appRouter <- ZIO.service[AppRouter]
       server    <- ZIO.service[Server]
@@ -26,11 +27,12 @@ object HttpModule:
       _ <- ZIO.addFinalizer(ZIO.log("HTTP server shut down"))
     yield ()
 
-    ZLayer.makeSome[UserService, Server](
+    ZLayer.makeSome[UserService & PostService, Server](
       AppRouter.layer,
       jwtCodecLayer,
       UserController.layer,
       SessionController.layer,
+      PostController.layer,
       Server.default,
       ZLayer.scoped(zio)
     )

@@ -1,3 +1,6 @@
 package influencer2.post
 
-trait PostDao
+import zio.UIO
+
+trait PostDao:
+  def createPost(post: Post): UIO[Unit]

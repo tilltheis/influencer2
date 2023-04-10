@@ -14,7 +14,7 @@ class UserController(userService: UserService):
       userService
         .createUser(username, createUser.password)
         .fold(
-          _ => Response.json(ErrorResponse("username already taken").toJson).setStatus(Status.Conflict),
+          _ => Response.json(MessageResponse("username already taken").toJson).setStatus(Status.Conflict),
           user => Response.json(UserResponse.fromUser(user).toJson).setStatus(Status.Created)
         )
     }
@@ -23,7 +23,7 @@ class UserController(userService: UserService):
     userService
       .readUser(username)
       .fold(
-        _ => Response.json(ErrorResponse("user not found").toJson).setStatus(Status.NotFound),
+        _ => Response.json(MessageResponse("user not found").toJson).setStatus(Status.NotFound),
         user => Response.json(UserResponse.fromUser(user).toJson)
       )
 end UserController

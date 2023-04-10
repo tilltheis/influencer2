@@ -8,7 +8,7 @@ import zio.http.model.Status
 import zio.json.DecoderOps
 import zio.{UIO, URLayer, ZIO, ZLayer}
 
-class AppRouter(userController: UserController, sessionController: SessionController):
+class AppRouter(userController: UserController, sessionController: SessionController, postController: PostController):
   private def allRoutes(sessionUserOption: Option[SessionUser]): UHttpApp = {
     val pf: PartialFunction[(Option[SessionUser], Request), UIO[Response]] = {
       case (_, request @ PUT -> !! / "users" / username) => userController.handleCreateUser(username, request)
@@ -19,7 +19,7 @@ class AppRouter(userController: UserController, sessionController: SessionContro
 
       case (Some(_), request @ GET -> !! / "feeds" / username) => dummyResponse(request)
 
-      case (Some(_), request @ PUT -> !! / "posts" / postId) => dummyResponse(request)
+      case (Some(user), request @ POST -> !! / "posts") => postController.handleCreatePost(user, request)
       case (_, request @ GET -> !! / "posts") if request.url.queryParams.get("username").isDefined =>
         dummyResponse(request)
       case (_, request @ GET -> !! / "posts" / postId)                               => dummyResponse(request)
@@ -42,9 +42,10 @@ class AppRouter(userController: UserController, sessionController: SessionContro
 end AppRouter
 
 object AppRouter:
-  val layer: URLayer[UserController & SessionController, AppRouter] = ZLayer {
+  val layer: URLayer[UserController & SessionController & PostController, AppRouter] = ZLayer {
     for
       userController    <- ZIO.service[UserController]
       sessionController <- ZIO.service[SessionController]
-    yield AppRouter(userController, sessionController)
+      postController    <- ZIO.service[PostController]
+    yield AppRouter(userController, sessionController, postController)
   }

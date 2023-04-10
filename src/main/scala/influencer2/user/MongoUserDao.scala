@@ -9,7 +9,7 @@ import zio.{IO, RLayer, ZIO, ZLayer}
 import java.util.UUID
 
 class MongoUserDao(collection: ZMongoCollection[User]) extends UserDao:
-  override def createUser(user: User): IO[UserAlreadyExists, User] =
+  override def createUser(user: User): IO[UserAlreadyExists, Unit] =
     collection
       .findOneAndUpdate(
         Filter.eq("username", user.username),
@@ -22,7 +22,7 @@ class MongoUserDao(collection: ZMongoCollection[User]) extends UserDao:
       .orDie
       .flatMap {
         case Some(existingUser) => ZIO.fail(UserAlreadyExists(existingUser))
-        case None               => ZIO.succeed(user)
+        case None               => ZIO.unit
       }
 
   override def loadUser(username: String): IO[UserNotFound.type, User] =

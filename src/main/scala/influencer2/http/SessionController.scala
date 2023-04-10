@@ -15,7 +15,7 @@ class SessionController(jwtCodec: JwtCodec, userService: UserService):
     withJsonRequest[LoginRequest](request) { login =>
       userService.verifyCredentials(login.username, login.password).either.flatMap {
         case Left(_) =>
-          ZIO.succeed(Response.json(ErrorResponse("invalid credentials").toJson).setStatus(Status.Unauthorized))
+          ZIO.succeed(Response.json(MessageResponse("invalid credentials").toJson).setStatus(Status.Unauthorized))
         case Right(user) =>
           for
             now <- zio.Clock.currentDateTime
@@ -45,7 +45,7 @@ class SessionController(jwtCodec: JwtCodec, userService: UserService):
     // ideally, this would also blacklist the not yet expired tokens
     ZIO.succeed(
       Response
-        .json(ErrorResponse("logged out").toJson)
+        .json(MessageResponse("logged out").toJson)
         .setStatus(Status.Ok)
         .addCookie(Cookie.clear(JwtSignatureCookieName).withHttpOnly)
     )

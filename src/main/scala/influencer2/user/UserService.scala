@@ -8,7 +8,7 @@ class UserService(userDao: UserDao):
     userId       <- UserId.random
     passwordHash <- ZIO.succeedBlocking(BCrypt.hashpw(password, BCrypt.gensalt()))
     newUser = User(userId, username, passwordHash)
-    user <- userDao.createUser(newUser).catchAll { case UserAlreadyExists(oldUser) =>
+    user <- userDao.createUser(newUser).as(newUser).catchAll { case UserAlreadyExists(oldUser) =>
       ZIO.ifZIO(ZIO.succeedBlocking(BCrypt.checkpw(password, oldUser.passwordHash)))(
         ZIO.succeed(oldUser),
         ZIO.fail(UserCreationConflict)

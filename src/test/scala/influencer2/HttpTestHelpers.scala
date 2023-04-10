@@ -1,11 +1,13 @@
 package influencer2
 
 import influencer2.http.AppRouter
-import zio.{IO, ZIO}
 import zio.http.model.{Cookie, Header, HeaderNames, HeaderValues}
-import zio.http.{Body, Path, Request, Response, URL}
+import zio.http.*
 import zio.json.DecoderOps
 import zio.json.ast.{Json, JsonCursor}
+import zio.{IO, ZIO}
+
+import java.util.UUID
 
 case class TestRequest(request: Request):
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
@@ -63,3 +65,12 @@ case class TestAuth(token: String, signature: String)
 
 object HttpTestHelpers:
   def parseJson(jsonString: String): IO[String, Json] = ZIO.from(jsonString.fromJson[Json])
+
+  def createTestUser: ZIO[AppRouter, Any, (UUID, TestAuth)] =
+    for
+      userResponse    <- TestRequest.put(!! / "users" / "test-user", """{ "password": "secret" }""").run
+      jsonStringId    <- ZIO.from(userResponse.jsonBody.get(JsonCursor.field("id").isString))
+      id              <- ZIO.attempt(UUID.fromString(jsonStringId.value))
+      sessionResponse <- TestRequest.post(!! / "sessions", """{ "username": "test-user", "password": "secret" }""").run
+      auth            <- sessionResponse.auth
+    yield (id, auth)
