@@ -74,3 +74,5 @@ object HttpTestHelpers:
       sessionResponse <- TestRequest.post(!! / "sessions", """{ "username": "test-user", "password": "secret" }""").run
       auth            <- sessionResponse.auth
     yield (id, auth)
+
+  def createTestUserAuth: ZIO[AppRouter, Any, TestAuth] = createTestUser.map(_._2)
