@@ -17,7 +17,8 @@ class PostController(postService: PostService):
           yield Response.json(MessageResponse("image url must be https").toJson).setStatus(Status.UnprocessableEntity)
 
         case Right(imageUrl) =>
-          for post <- postService.createPost(sessionUser.userId, imageUrl, createPostRequest.message)
+          val message = createPostRequest.message.map(_.trim).filter(_.nonEmpty)
+          for post <- postService.createPost(sessionUser.userId, imageUrl, message)
           yield Response.json(PostResponse.fromPost(post).toJson).setStatus(Status.Created)
     }
 end PostController
