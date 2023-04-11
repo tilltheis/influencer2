@@ -30,6 +30,14 @@ object PostAppIntegrationSpec extends ZIOSpecDefault:
                |}
                |""".stripMargin)
         yield assertTrue(response.status == Status.Created && response.jsonBody == expectedResponseJson)
+      },
+      test("rejects non-https media urls") {
+        for
+          (_, auth) <- createTestUser
+          response <-
+            post(!! / "posts", """{ "imageUrl": "http://example.org" }""").authed(auth).run
+          expectedResponseJson <- parseJson("""{ "message": "image url must be https" }""")
+        yield assertTrue(response.status == Status.UnprocessableEntity && response.jsonBody == expectedResponseJson)
       }
     )
   ).provide(TestRouter.layer)
