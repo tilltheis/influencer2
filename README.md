@@ -1,6 +1,11 @@
 # influencer 2
 Another practice project that implements an Instagram style feed.
 
+## Running
+`sbt run` will start the API server on http://localhost:8080.
+The supported routes can be found in the [AppRouter](src/main/scala/influencer2/http/AppRouter.scala) and [tests](/src/test/scala/influencer2).  
+`sbt test` will run the test suite.
+
 ## Technologies
 * JVM 17
 * Scala 3
