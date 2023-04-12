@@ -26,3 +26,11 @@ The supported routes can be found in the [AppRouter](src/main/scala/influencer2/
 
 ## Tests
 Because of the small size and complexity of this project, there are only HTTP router integration tests.
+
+## Possible Feature Extensions
+* upload media instead of only linking to it
+  * use S3 API client because many cloud storage providers have compatible APIs
+  * split media upload from post creation because that allows using `multipart/form-data` uploads and also gives users the chance to upload the file while they prepare the rest of the post
+    1. upload media w/ ID + TTL to tmp folder that cannot be served to internet
+    2. create post, referencing that media and move media to permanent, public location
+       * ensure that users can only reference own media, eg by having separate tmp folder per user
