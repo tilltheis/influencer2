@@ -6,86 +6,20 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
-
-type LoginFormProps = {
-  login: () => void;
-  close: () => void;
-  showRegisterForm: () => void;
-};
-
-function LoginForm({ login, close, showRegisterForm }: LoginFormProps) {
-  return (
-    <div className="LoginStatus__Form">
-      <h3>
-        Login
-        <FontAwesomeIcon
-          icon={faXmark}
-          title="Close"
-          role="button"
-          cursor="pointer"
-          onClick={close}
-          className="LoginStatus__Form__CloseButton"
-        />
-      </h3>
-      <label>
-        Username: <input type="text" name="username" />
-      </label>
-      <label>
-        Password: <input type="password" name="password" />
-      </label>
-      <button onClick={login}>Login</button>
-      or
-      <button className="Button--asLink" onClick={showRegisterForm}>
-        Create new account
-      </button>
-    </div>
-  );
-}
-
-type RegisterFormProps = {
-  close: () => void;
-  showLoginForm: () => void;
-};
-function RegisterForm({ close, showLoginForm }: RegisterFormProps) {
-  return (
-    <div className="LoginStatus__Form">
-      <h3>
-        Create Account
-        <FontAwesomeIcon
-          icon={faXmark}
-          title="Close"
-          role="button"
-          cursor="pointer"
-          onClick={close}
-          className="LoginStatus__Form__CloseButton"
-        />
-      </h3>
-      <label>
-        Username: <input type="text" name="username" />
-      </label>
-      <label>
-        Password: <input type="password" name="password" />
-      </label>
-      <button>Create account</button>
-      or
-      <button className="Button--asLink" onClick={showLoginForm}>
-        Login with existing user
-      </button>
-    </div>
-  );
-}
+import LoginWindow from "./LoginWindow";
+import RegisterWindow from "./RegisterWindow";
 
 type LoginButtonProps = {
-  showLoginForm: () => void;
+  showLoginWindow: () => void;
 };
-function LoginButton({ showLoginForm }: LoginButtonProps) {
+function LoginButton({ showLoginWindow }: LoginButtonProps) {
   return (
     <FontAwesomeIcon
       icon={faArrowRightToBracket}
       title="Login"
       role="button"
       cursor="pointer"
-      onClick={showLoginForm}
+      onClick={showLoginWindow}
     />
   );
 }
@@ -105,15 +39,17 @@ export default function LoginStatus() {
   const [buttonStatus, setButtonStatus] = useState<
     "showLoginButton" | "showProfileButton"
   >("showLoginButton");
-  const [formStatus, setFormStatus] = useState<
-    "showNoForm" | "showLoginForm" | "showRegisterForm"
-  >("showNoForm");
+  const [formStatus, setWindowStatus] = useState<
+    "showNoWindow" | "showLoginWindow" | "showRegisterWindow"
+  >("showNoWindow");
 
   let ButtonEl;
   switch (buttonStatus) {
     case "showLoginButton":
       ButtonEl = () => (
-        <LoginButton showLoginForm={() => setFormStatus("showLoginForm")} />
+        <LoginButton
+          showLoginWindow={() => setWindowStatus("showLoginWindow")}
+        />
       );
       break;
     case "showProfileButton":
@@ -121,37 +57,33 @@ export default function LoginStatus() {
       break;
   }
 
-  let FormEl;
+  let WindowEl;
   switch (formStatus) {
-    case "showLoginForm":
-      FormEl = () => (
-        <LoginForm
-          login={() => {
-            setButtonStatus("showProfileButton");
-            setFormStatus("showNoForm");
-          }}
-          close={() => setFormStatus("showNoForm")}
-          showRegisterForm={() => setFormStatus("showRegisterForm")}
+    case "showLoginWindow":
+      WindowEl = () => (
+        <LoginWindow
+          close={() => setWindowStatus("showNoWindow")}
+          showRegisterWindow={() => setWindowStatus("showRegisterWindow")}
         />
       );
       break;
-    case "showRegisterForm":
-      FormEl = () => (
-        <RegisterForm
-          close={() => setFormStatus("showNoForm")}
-          showLoginForm={() => setFormStatus("showLoginForm")}
+    case "showRegisterWindow":
+      WindowEl = () => (
+        <RegisterWindow
+          close={() => setWindowStatus("showNoWindow")}
+          showLoginWindow={() => setWindowStatus("showLoginWindow")}
         />
       );
       break;
-    case "showNoForm":
-      FormEl = () => <></>;
+    case "showNoWindow":
+      WindowEl = () => <></>;
       break;
   }
 
   return (
     <div className="LoginStatus">
       <ButtonEl />
-      <FormEl />
+      <WindowEl />
     </div>
   );
 }

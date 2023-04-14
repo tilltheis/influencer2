@@ -41,29 +41,43 @@ header h1 a {
 .LoginStatus {
   position: relative;
 }
-.LoginStatus__Form {
+
+.Window {
   border: 0.1rem solid #000;
   border-radius: 1rem;
   padding: 1rem;
   background-color: #222;
-
-  position: absolute;
-  top: -1rem;
-  right: -1rem;
-
-  display: flex;
-  flex-direction: column;
 }
-.LoginStatus__Form h3 {
+.Window h3 {
   margin: 0;
   padding: 0;
 }
-.LoginStatus__Form__CloseButton {
+.Window__CloseButton {
   float: right;
 }
-.LoginStatus__Form label {
+.Window label {
   display: flex;
   justify-content: space-between;
+}
+
+.LoginWindow {
+  position: absolute;
+  top: -1rem;
+  right: -1rem;
+}
+.LoginWindow .Window__Children {
+  display: flex;
+  flex-direction: column;
+}
+
+.RegisterWindow {
+  position: absolute;
+  top: -1rem;
+  right: -1rem;
+}
+.RegisterWindow .Window__Children {
+  display: flex;
+  flex-direction: column;
 }
 
 a,
