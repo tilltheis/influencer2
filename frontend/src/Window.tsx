@@ -1,17 +1,19 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CSSProperties } from "react";
 import "./Window.css";
 
 type WindowProps = {
   title: string;
   onClose: () => void;
   className?: string;
+  style?: CSSProperties;
   children: React.ReactNode;
 };
 
-export default function Window({ title, onClose, className, children }: WindowProps) {
+export default function Window({ title, onClose, className, style, children }: WindowProps) {
   return (
-    <div className={`Window ${className}`}>
+    <div className={`Window ${className}`} style={style}>
       <h3>
         {title}
         <FontAwesomeIcon

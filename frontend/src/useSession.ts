@@ -3,7 +3,7 @@ import { Session } from "./model";
 
 export type UseSessionResult = {
   session: Session | null;
-  setSession: (session: Session) => void;
+  setSession: (session: Session | null) => void;
 };
 export default (): UseSessionResult => {
   const [session, setSession] = useState<Session | null>(() => {

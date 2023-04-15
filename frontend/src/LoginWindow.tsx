@@ -2,7 +2,7 @@ import "react";
 import { ChangeEvent, FormEvent, MouseEvent, useState } from "react";
 import "./LoginWindow.css";
 import { Session } from "./model";
-import useCreateSession from "./useMutateSession";
+import { useCreateSession } from "./sessionHooks";
 import Window from "./Window";
 
 type LoginWindowProps = {
@@ -39,7 +39,7 @@ export default function LoginWindow({ onClose, onLogin, onShowRegisterWindow }: 
         {sessionCreation.isError && "An unknown error occurred."}
         {sessionCreation.data?.type == "invalidCredentials" && "Invalid credentials."}
         <label>
-          Username: <input type="text" name="username" onChange={handleUsernameChanged} />
+          Username: <input type="text" name="username" onChange={handleUsernameChanged} autoFocus />
         </label>
         <label>
           Password: <input type="password" name="password" onChange={handlePasswordChanged} />

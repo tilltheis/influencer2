@@ -1,11 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { Session } from "./model";
 
-type SessionResult = { type: "session" } & Session;
-type InvalidCredentialsResult = { type: "invalidCredentials" };
-type CreateSessionResult = SessionResult | InvalidCredentialsResult;
+export type SessionResult = { type: "session" } & Session;
+export type InvalidCredentialsResult = { type: "invalidCredentials" };
+export type CreateSessionResult = SessionResult | InvalidCredentialsResult;
 
-export default function useCreateSession() {
+export function useCreateSession() {
   return useMutation(
     async (credentials: { username: string; password: string }): Promise<CreateSessionResult> => {
       const response = await fetch("/api/sessions", {
@@ -41,4 +41,25 @@ export default function useCreateSession() {
       }
     }
   );
+}
+
+export function useDeleteSession(token: string) {
+  return useMutation(async (): Promise<void> => {
+    const response = await fetch("/api/sessions", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    switch (response.status) {
+      case 200:
+        return;
+      default:
+        throw new Error(
+          `Delete session mutation failed. Unexpected response status ${response.status}.`
+        );
+    }
+  });
 }

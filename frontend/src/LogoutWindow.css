@@ -1,0 +1,12 @@
+.LogoutWindow {
+  position: absolute;
+  top: -1rem;
+  right: -1rem;
+}
+.LogoutWindow .Window__Children {
+  text-align: center;
+}
+.LogoutWindow .Window__Children form {
+  display: flex;
+  flex-direction: column;
+}

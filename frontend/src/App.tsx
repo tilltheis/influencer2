@@ -13,7 +13,7 @@ export default function App() {
         <h1>
           <a href="/">Influencer&nbsp;2</a>
         </h1>
-        <SessionStatus session={session} onLogin={setSession} />
+        <SessionStatus session={session} onLogin={setSession} onLogout={() => setSession(null)} />
       </header>
       <main>foo</main>
       <footer>

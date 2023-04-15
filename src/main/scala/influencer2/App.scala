@@ -5,5 +5,5 @@ import zio.{Console, Task, ZIO, ZIOAppDefault}
 
 object App extends ZIOAppDefault:
   override def run: Task[Unit] =
-    (ZIO.service[Server] *> Console.readLine("Press ENTER to stop the server\n")).unit
+    (ZIO.service[Server] *> Console.readLine("Press ENTER to stop the server\n").catchAll(_ => ZIO.never)).unit
       .provide(DatabaseModule.layer, UserModule.layer, PostModule.layer, HttpModule.layer)

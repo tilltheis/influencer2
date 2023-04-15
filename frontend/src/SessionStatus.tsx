@@ -6,13 +6,21 @@ import LoginWindow from "./LoginWindow";
 import RegisterWindow from "./RegisterWindow";
 import { Session } from "./model";
 import "./SessionStatus.css";
+import LogoutWindow from "./LogoutWindow";
 
-type LoggedInStatusProps = { session: Session };
-const LoggedInStatus = ({ session }: LoggedInStatusProps) => {
+type LoggedInStatusProps = { session: Session; onLogout: () => void };
+const LoggedInStatus = ({ session, onLogout }: LoggedInStatusProps) => {
+  const [showWindow, setShowWindow] = useState(false);
+
   return (
-    <button>
-      {session.username} <FontAwesomeIcon icon={faUser} title="Profile" />
-    </button>
+    <>
+      <button onClick={() => setShowWindow(true)}>
+        {session.username} <FontAwesomeIcon icon={faUser} title="Profile" />
+      </button>
+      {showWindow && (
+        <LogoutWindow session={session} onClose={() => setShowWindow(false)} onLogout={onLogout} />
+      )}
+    </>
   );
 };
 
@@ -62,11 +70,16 @@ const LoggedOutStatus = ({ onLogin }: LoggedOutStatusProps) => {
 type SessionStatusProps = {
   session: Session | null;
   onLogin: (session: Session) => void;
+  onLogout: () => void;
 };
-export default ({ session, onLogin }: SessionStatusProps) => {
+export default ({ session, onLogin, onLogout }: SessionStatusProps) => {
   return (
     <div className="SessionStatus">
-      {session ? <LoggedInStatus session={session} /> : <LoggedOutStatus onLogin={onLogin} />}
+      {session ? (
+        <LoggedInStatus session={session} onLogout={onLogout} />
+      ) : (
+        <LoggedOutStatus onLogin={onLogin} />
+      )}
     </div>
   );
 };
