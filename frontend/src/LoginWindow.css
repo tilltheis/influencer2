@@ -1,0 +1,12 @@
+.LoginWindow {
+  position: absolute;
+  top: -1rem;
+  right: -1rem;
+}
+.LoginWindow .Window__Children {
+  text-align: center;
+}
+.LoginWindow .Window__Children form {
+  display: flex;
+  flex-direction: column;
+}

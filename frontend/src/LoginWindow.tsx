@@ -1,32 +1,55 @@
 import "react";
+import { ChangeEvent, FormEvent, MouseEvent, useState } from "react";
+import "./LoginWindow.css";
+import { Session } from "./model";
+import useCreateSession from "./useMutateSession";
 import Window from "./Window";
 
 type LoginWindowProps = {
-  close: () => void;
-  showRegisterWindow: () => void;
+  onClose: () => void;
+  onLogin: (session: Session) => void;
+  onShowRegisterWindow: () => void;
 };
 
-export default function LoginWindow({
-  close,
-  showRegisterWindow,
-}: LoginWindowProps) {
-  function login() {
-    close();
+export default function LoginWindow({ onClose, onLogin, onShowRegisterWindow }: LoginWindowProps) {
+  const sessionCreation = useCreateSession();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    sessionCreation.mutate(
+      { username, password },
+      {
+        onSuccess: (response) => response.type === "session" && onLogin(response),
+      }
+    );
   }
 
+  const handleUsernameChanged = (e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value);
+  const handlePasswordChanged = (e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value);
+  const handleShowRegisterWindowClicked = (e: MouseEvent) => {
+    e.preventDefault();
+    onShowRegisterWindow();
+  };
+
   return (
-    <Window title="Login" className="LoginWindow" close={close}>
-      <label>
-        Username: <input type="text" name="username" />
-      </label>
-      <label>
-        Password: <input type="password" name="password" />
-      </label>
-      <button onClick={login}>Login</button>
-      or
-      <button className="Button--asLink" onClick={showRegisterWindow}>
-        Create new account
-      </button>
+    <Window title="Login" className="LoginWindow" onClose={onClose}>
+      <form onSubmit={handleSubmit}>
+        {sessionCreation.isError && "An unknown error occurred."}
+        {sessionCreation.data?.type == "invalidCredentials" && "Invalid credentials."}
+        <label>
+          Username: <input type="text" name="username" onChange={handleUsernameChanged} />
+        </label>
+        <label>
+          Password: <input type="password" name="password" onChange={handlePasswordChanged} />
+        </label>
+        <button>Login</button>
+        or
+        <button className="button--asLink" onClick={handleShowRegisterWindowClicked}>
+          Create new account
+        </button>
+      </form>
     </Window>
   );
 }

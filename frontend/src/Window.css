@@ -1,0 +1,18 @@
+.Window {
+  border: 0.1rem solid #000;
+  border-radius: 1rem;
+  padding: 1rem;
+  background-color: #222;
+}
+.Window h3 {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+.Window__CloseButton {
+  float: right;
+}
+.Window label {
+  display: flex;
+  justify-content: space-between;
+}

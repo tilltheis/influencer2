@@ -1,20 +1,15 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "react";
+import "./Window.css";
 
 type WindowProps = {
   title: string;
-  close: () => void;
+  onClose: () => void;
   className?: string;
   children: React.ReactNode;
 };
 
-export default function Window({
-  title,
-  close,
-  className,
-  children,
-}: WindowProps) {
+export default function Window({ title, onClose, className, children }: WindowProps) {
   return (
     <div className={`Window ${className}`}>
       <h3>
@@ -24,7 +19,7 @@ export default function Window({
           title="Close"
           role="button"
           cursor="pointer"
-          onClick={close}
+          onClick={onClose}
           className="Window__CloseButton"
         />
       </h3>
