@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { fetchJson, HttpStatusCode } from "./http";
+import { fetchJson } from "./http";
 import { User } from "./model";
 
 export type UserResult = { type: "user" } & User;

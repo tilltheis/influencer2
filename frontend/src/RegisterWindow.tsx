@@ -15,7 +15,7 @@ export default function RegisterWindow({ onClose, onShowLoginWindow }: RegisterW
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleSubmit(e: FormEvent) {
+  function handleFormSubmitted(e: FormEvent) {
     e.preventDefault();
     userCreation.mutate({ username, password });
   }
@@ -28,7 +28,7 @@ export default function RegisterWindow({ onClose, onShowLoginWindow }: RegisterW
   };
 
   const form = (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleFormSubmitted}>
       {userCreation.isError && <Alert level="error">An unknown error occurred.</Alert>}
       {userCreation.data?.type == "usernameUnavailable" && (
         <Alert level="error">Username unavailable.</Alert>

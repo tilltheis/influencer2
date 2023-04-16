@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./App.css";
+import DraftPostButton from "./DraftPostButton";
 import SessionStatus from "./SessionStatus";
 import useSession from "./useSession";
 
@@ -7,12 +8,26 @@ export default function App() {
   const queryClient = new QueryClient();
   const { session, setSession } = useSession();
 
+  let headerButtons;
+
+  // TODO: split up SessionStatus into LoginRegisterButton and LogoutButton and add them here
+  if (session) {
+    headerButtons = (
+      <div>
+        <DraftPostButton session={session} />
+      </div>
+    );
+  } else {
+    headerButtons = <></>;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <header>
         <h1>
           <a href="/">Influencer&nbsp;2</a>
         </h1>
+        {headerButtons}
         <SessionStatus session={session} onLogin={setSession} onLogout={() => setSession(null)} />
       </header>
       <main>foo</main>

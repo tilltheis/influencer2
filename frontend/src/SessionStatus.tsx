@@ -1,4 +1,4 @@
-import { faArrowRightToBracket, faPenToSquare, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightToBracket, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import LoginWindow from "./LoginWindow";
@@ -13,9 +13,6 @@ const LoggedInStatus = ({ session, onLogout }: LoggedInStatusProps) => {
 
   return (
     <>
-      <button className="button--asText" style={{ marginRight: "1rem" }}>
-        post <FontAwesomeIcon icon={faPenToSquare} />
-      </button>
       <button className="button--asText" onClick={() => setShowWindow(true)}>
         {session.username} <FontAwesomeIcon icon={faUser} title="Profile" />
       </button>

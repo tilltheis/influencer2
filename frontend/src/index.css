@@ -6,6 +6,12 @@
   font-family: serif;
 }
 
+*:not(img):not(video):not(svg),
+*:after,
+*:before {
+  box-sizing: inherit;
+}
+
 body {
   margin: 0;
   padding: 0;

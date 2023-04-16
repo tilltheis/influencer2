@@ -17,7 +17,7 @@ export default function LoginWindow({ onClose, onLogin, onShowRegisterWindow }: 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleSubmit(e: FormEvent) {
+  function handleFormSubmitted(e: FormEvent) {
     e.preventDefault();
     sessionCreation.mutate(
       { username, password },
@@ -36,7 +36,7 @@ export default function LoginWindow({ onClose, onLogin, onShowRegisterWindow }: 
 
   return (
     <Window title="Login" className="LoginWindow" onClose={onClose}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleFormSubmitted}>
         {sessionCreation.isError && <Alert level="error">An unknown error occurred.</Alert>}
         {sessionCreation.data?.type == "invalidCredentials" && (
           <Alert level="error">Invalid credentials.</Alert>
