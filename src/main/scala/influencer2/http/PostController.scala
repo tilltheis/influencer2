@@ -12,15 +12,21 @@ class PostController(postService: PostService):
   def handleCreatePost(sessionUser: SessionUser, request: Request): UIO[Response] =
     withJsonRequest[CreatePostRequest](request) { createPostRequest =>
       HttpsUrl.create(createPostRequest.imageUrl) match
-        case Left(message) =>
-          for _ <- ZIO.logDebug(message)
-          yield Response.json(MessageResponse("image url must be https").toJson).setStatus(Status.UnprocessableEntity)
+        case Left(_) =>
+          ZIO.succeed(
+            Response.json(MessageResponse("image url must be https").toJson).setStatus(Status.UnprocessableEntity)
+          )
 
         case Right(imageUrl) =>
           val message = createPostRequest.message.map(_.trim).filter(_.nonEmpty)
           for post <- postService.createPost(sessionUser.userId, sessionUser.username, imageUrl, message)
           yield Response.json(PostResponse.fromPost(post).toJson).setStatus(Status.Created)
     }
+
+  // this should have limit and offset
+  val handleReadPosts: UIO[Response] = postService.readPosts.map { posts =>
+    Response.json(posts.map(PostResponse.fromPost).toJson)
+  }
 end PostController
 
 object PostController:

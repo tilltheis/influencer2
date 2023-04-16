@@ -11,6 +11,8 @@ class PostService(postDao: PostDao):
       post = Post(postId, userId, username, createdAt, imageUrl, message)
       _ <- postDao.createPost(post)
     yield post
+
+  val readPosts: UIO[Seq[Post]] = postDao.loadPosts
 end PostService
 
 object PostService:
