@@ -1,12 +1,11 @@
-import "react";
+import { faArrowRightToBracket, faPenToSquare, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRightToBracket, faUser, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import LoginWindow from "./LoginWindow";
-import RegisterWindow from "./RegisterWindow";
-import { Session } from "./model";
-import "./SessionStatus.css";
 import LogoutWindow from "./LogoutWindow";
+import { Session } from "./model";
+import RegisterWindow from "./RegisterWindow";
+import "./SessionStatus.css";
 
 type LoggedInStatusProps = { session: Session; onLogout: () => void };
 const LoggedInStatus = ({ session, onLogout }: LoggedInStatusProps) => {
@@ -14,7 +13,10 @@ const LoggedInStatus = ({ session, onLogout }: LoggedInStatusProps) => {
 
   return (
     <>
-      <button onClick={() => setShowWindow(true)}>
+      <button className="button--asText" style={{ marginRight: "1rem" }}>
+        post <FontAwesomeIcon icon={faPenToSquare} />
+      </button>
+      <button className="button--asText" onClick={() => setShowWindow(true)}>
         {session.username} <FontAwesomeIcon icon={faUser} title="Profile" />
       </button>
       {showWindow && (
@@ -59,7 +61,7 @@ const LoggedOutStatus = ({ onLogin }: LoggedOutStatusProps) => {
 
   return (
     <>
-      <button onClick={() => setWindowStatus("showLoginWindow")}>
+      <button className="button--asText" onClick={() => setWindowStatus("showLoginWindow")}>
         login <FontAwesomeIcon icon={faArrowRightToBracket} />
       </button>
       <WindowEl />

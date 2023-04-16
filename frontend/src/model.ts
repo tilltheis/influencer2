@@ -4,3 +4,5 @@ export type Session = {
   username: string;
   expiresAtTimestamp: number;
 };
+
+export type User = { id: string; username: string };

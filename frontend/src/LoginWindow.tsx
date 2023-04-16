@@ -1,5 +1,6 @@
 import "react";
 import { ChangeEvent, FormEvent, MouseEvent, useState } from "react";
+import Alert from "./Alert";
 import "./LoginWindow.css";
 import { Session } from "./model";
 import { useCreateSession } from "./sessionHooks";
@@ -36,8 +37,10 @@ export default function LoginWindow({ onClose, onLogin, onShowRegisterWindow }: 
   return (
     <Window title="Login" className="LoginWindow" onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        {sessionCreation.isError && "An unknown error occurred."}
-        {sessionCreation.data?.type == "invalidCredentials" && "Invalid credentials."}
+        {sessionCreation.isError && <Alert level="error">An unknown error occurred.</Alert>}
+        {sessionCreation.data?.type == "invalidCredentials" && (
+          <Alert level="error">Invalid credentials.</Alert>
+        )}
         <label>
           Username: <input type="text" name="username" onChange={handleUsernameChanged} autoFocus />
         </label>
