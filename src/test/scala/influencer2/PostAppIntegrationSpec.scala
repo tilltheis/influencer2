@@ -16,15 +16,16 @@ object PostAppIntegrationSpec extends ZIOSpecDefault:
     suite("POST /posts")(
       test("creates new post") {
         for
-          _              <- TestClock.setTime(Instant.parse("2023-04-10T16:54:32.123Z"))
-          (userId, auth) <- createTestUser
+          _            <- TestClock.setTime(Instant.parse("2023-04-10T16:54:32.123Z"))
+          (user, auth) <- createTestUser
           response <-
             post(!! / "posts", """{ "imageUrl": "https://example.org", "message": "test" }""").authed(auth).run
           id <- ZIO.from(response.jsonBody.get(JsonCursor.field("id").isString)).map(_.value)
           expectedResponseJson <- parseJson(s"""
             |{
             |  "id": "$id",
-            |  "author": "${userId.toString}",
+            |  "userId": "${user.id.toString}",
+            |  "username": "${user.username}",
             |  "createdAt": "2023-04-10T16:54:32.123Z",
             |  "imageUrl": "https://example.org",
             |  "message": "test"

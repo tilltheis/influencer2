@@ -12,10 +12,24 @@ case class LoginRequest(username: String, password: String)
 case class LoginResponse(token: String)
 
 case class CreatePostRequest(imageUrl: String, message: Option[String])
-case class PostResponse(id: UUID, author: UUID, createdAt: Instant, imageUrl: String, message: Option[String])
+case class PostResponse(
+    id: UUID,
+    userId: UUID,
+    username: String,
+    createdAt: Instant,
+    imageUrl: String,
+    message: Option[String]
+)
 object PostResponse:
   def fromPost(post: Post): PostResponse =
-    PostResponse(post.id.value, post.author.value, post.createdAt, post.imageUrl.value.toExternalForm, post.message)
+    PostResponse(
+      post.id.value,
+      post.userId.value,
+      post.username,
+      post.createdAt,
+      post.imageUrl.value.toExternalForm,
+      post.message
+    )
 
 case class MessageResponse(message: String)
 

@@ -8,7 +8,14 @@ import java.time.Instant
 import java.util.UUID
 import scala.util.Try
 
-case class Post(id: PostId, author: UserId, createdAt: Instant, imageUrl: HttpsUrl, message: Option[String])
+case class Post(
+    id: PostId,
+    userId: UserId,
+    username: String,
+    createdAt: Instant,
+    imageUrl: HttpsUrl,
+    message: Option[String]
+)
 
 opaque type PostId = UUID
 object PostId extends (UUID => PostId):

@@ -18,7 +18,7 @@ class PostController(postService: PostService):
 
         case Right(imageUrl) =>
           val message = createPostRequest.message.map(_.trim).filter(_.nonEmpty)
-          for post <- postService.createPost(sessionUser.userId, imageUrl, message)
+          for post <- postService.createPost(sessionUser.userId, sessionUser.username, imageUrl, message)
           yield Response.json(PostResponse.fromPost(post).toJson).setStatus(Status.Created)
     }
 end PostController

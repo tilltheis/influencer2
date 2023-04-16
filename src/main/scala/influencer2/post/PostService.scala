@@ -4,11 +4,11 @@ import influencer2.user.UserId
 import zio.{Clock, IO, UIO, URLayer, ZLayer}
 
 class PostService(postDao: PostDao):
-  def createPost(author: UserId, imageUrl: HttpsUrl, message: Option[String]): UIO[Post] =
+  def createPost(userId: UserId, username: String, imageUrl: HttpsUrl, message: Option[String]): UIO[Post] =
     for
       postId    <- PostId.random
       createdAt <- Clock.instant
-      post = Post(postId, author, createdAt, imageUrl, message)
+      post = Post(postId, userId, username, createdAt, imageUrl, message)
       _ <- postDao.createPost(post)
     yield post
 end PostService

@@ -1,9 +1,9 @@
 package influencer2
 
-import influencer2.http.AppRouter
+import influencer2.http.{AppRouter, UserResponse}
 import zio.http.model.{Cookie, Header, HeaderNames, HeaderValues}
 import zio.http.*
-import zio.json.DecoderOps
+import zio.json.{DecoderOps, DeriveJsonDecoder, JsonDecoder}
 import zio.json.ast.{Json, JsonCursor}
 import zio.{IO, ZIO}
 
@@ -64,15 +64,16 @@ object TestResponse:
 case class TestAuth(token: String, signature: String)
 
 object HttpTestHelpers:
+  private given JsonDecoder[UserResponse] = DeriveJsonDecoder.gen
+  
   def parseJson(jsonString: String): IO[String, Json] = ZIO.from(jsonString.fromJson[Json])
 
-  def createTestUser: ZIO[AppRouter, Any, (UUID, TestAuth)] =
+  def createTestUser: ZIO[AppRouter, Any, (UserResponse, TestAuth)] =
     for
       userResponse    <- TestRequest.put(!! / "users" / "test-user", """{ "password": "secret" }""").run
-      jsonStringId    <- ZIO.from(userResponse.jsonBody.get(JsonCursor.field("id").isString))
-      id              <- ZIO.attempt(UUID.fromString(jsonStringId.value))
+      user            <- ZIO.from(userResponse.jsonBody.as[UserResponse])
       sessionResponse <- TestRequest.post(!! / "sessions", """{ "username": "test-user", "password": "secret" }""").run
       auth            <- sessionResponse.auth
-    yield (id, auth)
+    yield (user, auth)
 
   def createTestUserAuth: ZIO[AppRouter, Any, TestAuth] = createTestUser.map(_._2)
