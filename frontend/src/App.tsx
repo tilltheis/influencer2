@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./App.css";
 import DraftPostButton from "./DraftPostButton";
+import Posts from "./Posts";
 import SessionStatus from "./SessionStatus";
 import useSession from "./useSession";
 
@@ -30,7 +31,9 @@ export default function App() {
         {headerButtons}
         <SessionStatus session={session} onLogin={setSession} onLogout={() => setSession(null)} />
       </header>
-      <main>foo</main>
+      <main>
+        <Posts />
+      </main>
       <footer>
         Source Code on <a href="https://github.com/tilltheis/influencer2">GitHub</a>
       </footer>
