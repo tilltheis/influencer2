@@ -1,11 +1,18 @@
-import { useEffect, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { SessionModel } from "./model";
 
-export type UseSessionResult = {
+export type SessionState = {
   session: SessionModel | null;
-  setSession: (session: SessionModel | null) => void;
+  setSession: (newSession: SessionModel | null) => void;
 };
-export default (): UseSessionResult => {
+
+export const SessionContext = createContext<SessionState>({ session: null, setSession: () => {} });
+
+export type SessionProviderProps = {
+  children: ReactNode;
+};
+
+export function SessionProvider({ children }: SessionProviderProps) {
   const [session, setSession] = useState<SessionModel | null>(() => {
     const sessionString = localStorage.getItem("session");
     return sessionString ? JSON.parse(sessionString) : null;
@@ -34,8 +41,11 @@ export default (): UseSessionResult => {
     setSession(newSession);
   };
 
-  return {
-    session,
-    setSession: handleSessionChanged,
-  };
-};
+  const context = { session, setSession: handleSessionChanged };
+
+  return <SessionContext.Provider value={context}>{children}</SessionContext.Provider>;
+}
+
+export function useSession(): SessionState {
+  return useContext(SessionContext);
+}

@@ -2,10 +2,18 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./App.css";
 import DraftPostButton from "./DraftPostButton";
 import Posts from "./Posts";
+import { SessionProvider, useSession } from "./SessionContext";
 import SessionStatus from "./SessionStatus";
-import useSession from "./useSession";
 
 export default function App() {
+  return (
+    <SessionProvider>
+      <AppInSessionContext />
+    </SessionProvider>
+  );
+}
+
+function AppInSessionContext() {
   const queryClient = new QueryClient();
   const { session, setSession } = useSession();
 
