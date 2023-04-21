@@ -1,4 +1,5 @@
 import Alert from "./Alert";
+import Post from "./Post";
 import { useReadPosts } from "./postHooks";
 
 export default function Posts() {
@@ -11,12 +12,7 @@ export default function Posts() {
   return (
     <div>
       {postsReading.data.map((post) => (
-        <div key={post.id}>
-          @{post.username} posted on {post.createdAt.toISOString()}
-          <br />
-          <img src={post.imageUrl} />
-          {post.message && <p>{post.message}</p>}
-        </div>
+        <Post key={post.id} {...post} />
       ))}
     </div>
   );

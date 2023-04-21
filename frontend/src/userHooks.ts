@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { fetchJson } from "./http";
-import { User } from "./model";
+import { UserModel } from "./model";
 
-export type UserResult = { type: "user" } & User;
+export type UserResult = { type: "user" } & UserModel;
 export type UsernameUnavailableResult = { type: "usernameUnavailable" };
 export type CreateUserResult = UserResult | UsernameUnavailableResult;
 

@@ -1,0 +1,22 @@
+.Post {
+  border: 0.1rem solid #333;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: #222;
+}
+
+.Post__Title {
+  font-size: 1.4rem;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+}
+
+.Post__Image {
+  width: 100%;
+}
+
+.Post__Message {
+  font-size: 1.8rem;
+}

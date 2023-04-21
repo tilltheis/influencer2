@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { Session } from "./model";
+import { SessionModel } from "./model";
 
 export type UseSessionResult = {
-  session: Session | null;
-  setSession: (session: Session | null) => void;
+  session: SessionModel | null;
+  setSession: (session: SessionModel | null) => void;
 };
 export default (): UseSessionResult => {
-  const [session, setSession] = useState<Session | null>(() => {
+  const [session, setSession] = useState<SessionModel | null>(() => {
     const sessionString = localStorage.getItem("session");
     return sessionString ? JSON.parse(sessionString) : null;
   });
@@ -28,7 +28,7 @@ export default (): UseSessionResult => {
     }
   }, [session]);
 
-  const handleSessionChanged = (newSession: Session | null) => {
+  const handleSessionChanged = (newSession: SessionModel | null) => {
     if (newSession) localStorage.setItem("session", JSON.stringify(newSession));
     else localStorage.removeItem("session");
     setSession(newSession);

@@ -3,10 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import "./DraftPostButton.css";
 import DraftPostWindow from "./DraftPostWindow";
-import { Post, Session } from "./model";
+import { SessionModel } from "./model";
 
 export type DraftPostButtonProps = {
-  session: Session;
+  session: SessionModel;
 };
 export default function DraftPostButton({ session }: DraftPostButtonProps) {
   const [showWindow, setShowWindow] = useState(false);

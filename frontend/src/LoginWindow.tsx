@@ -2,13 +2,13 @@ import "react";
 import { ChangeEvent, FormEvent, MouseEvent, useState } from "react";
 import Alert from "./Alert";
 import "./LoginWindow.css";
-import { Session } from "./model";
+import { SessionModel } from "./model";
 import { useCreateSession } from "./sessionHooks";
 import Window from "./Window";
 
 type LoginWindowProps = {
   onClose: () => void;
-  onLogin: (session: Session) => void;
+  onLogin: (session: SessionModel) => void;
   onShowRegisterWindow: () => void;
 };
 

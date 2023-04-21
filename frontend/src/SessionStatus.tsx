@@ -3,11 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import LoginWindow from "./LoginWindow";
 import LogoutWindow from "./LogoutWindow";
-import { Session } from "./model";
+import { SessionModel } from "./model";
 import RegisterWindow from "./RegisterWindow";
 import "./SessionStatus.css";
 
-type LoggedInStatusProps = { session: Session; onLogout: () => void };
+type LoggedInStatusProps = { session: SessionModel; onLogout: () => void };
 const LoggedInStatus = ({ session, onLogout }: LoggedInStatusProps) => {
   const [showWindow, setShowWindow] = useState(false);
 
@@ -23,7 +23,7 @@ const LoggedInStatus = ({ session, onLogout }: LoggedInStatusProps) => {
   );
 };
 
-type LoggedOutStatusProps = { onLogin: (session: Session) => void };
+type LoggedOutStatusProps = { onLogin: (session: SessionModel) => void };
 const LoggedOutStatus = ({ onLogin }: LoggedOutStatusProps) => {
   const [windowStatus, setWindowStatus] = useState<
     "showNoWindow" | "showLoginWindow" | "showRegisterWindow"
@@ -67,8 +67,8 @@ const LoggedOutStatus = ({ onLogin }: LoggedOutStatusProps) => {
 };
 
 type SessionStatusProps = {
-  session: Session | null;
-  onLogin: (session: Session) => void;
+  session: SessionModel | null;
+  onLogin: (session: SessionModel) => void;
   onLogout: () => void;
 };
 export default ({ session, onLogin, onLogout }: SessionStatusProps) => {

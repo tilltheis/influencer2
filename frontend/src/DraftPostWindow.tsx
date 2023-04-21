@@ -1,7 +1,7 @@
 import { ChangeEvent, FormEvent, SyntheticEvent, useState } from "react";
 import Alert from "./Alert";
 import "./DraftPostWindow.css";
-import { Post, Session } from "./model";
+import { PostModel, SessionModel } from "./model";
 import { useCreatePost } from "./postHooks";
 import Window from "./Window";
 
@@ -9,8 +9,8 @@ import Window from "./Window";
 
 export type DraftPostWindowProps = {
   onClose: () => void;
-  onPost: (post: Post) => void;
-  session: Session;
+  onPost: (post: PostModel) => void;
+  session: SessionModel;
 };
 
 export default function DraftPostWindow({ onClose, onPost, session }: DraftPostWindowProps) {

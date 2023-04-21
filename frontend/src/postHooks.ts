@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchJson } from "./http";
-import { Post } from "./model";
+import { PostModel } from "./model";
 
-export type PostResult = { type: "post" } & Post;
+export type PostResult = { type: "post" } & PostModel;
 export type InvalidInputResult = { type: "invalidInput" };
 export type CreatePostResult = PostResult | InvalidInputResult;
 
@@ -25,7 +25,7 @@ export function useCreatePost(authToken: string) {
     {
       onSuccess: (result) => {
         if (result.type === "post")
-          queryClient.setQueryData<Post[]>(["posts"], (existingData) =>
+          queryClient.setQueryData<PostModel[]>(["posts"], (existingData) =>
             existingData ? [result, ...existingData] : [result]
           );
       },
@@ -34,7 +34,7 @@ export function useCreatePost(authToken: string) {
 }
 
 export function useReadPosts() {
-  return useQuery(["posts"], async (): Promise<Post[]> => {
+  return useQuery(["posts"], async (): Promise<PostModel[]> => {
     return fetchJson({
       method: "GET",
       url: "/api/posts",

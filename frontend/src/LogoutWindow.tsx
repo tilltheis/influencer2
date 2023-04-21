@@ -1,12 +1,12 @@
 import "react";
 import { FormEvent } from "react";
 import "./LogoutWindow.css";
-import { Session } from "./model";
+import { SessionModel } from "./model";
 import { useDeleteSession } from "./sessionHooks";
 import Window from "./Window";
 
 type LogoutWindowProps = {
-  session: Session;
+  session: SessionModel;
   onClose: () => void;
   onLogout: () => void;
 };

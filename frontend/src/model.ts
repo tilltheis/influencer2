@@ -1,13 +1,13 @@
-export type Session = {
+export type SessionModel = {
   token: string;
   userId: string;
   username: string;
   expiresAtTimestamp: number;
 };
 
-export type User = { id: string; username: string };
+export type UserModel = { id: string; username: string };
 
-export type Post = {
+export type PostModel = {
   id: string;
   userId: string;
   username: string;
