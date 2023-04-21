@@ -3,17 +3,17 @@ import Alert from "./Alert";
 import "./DraftPostWindow.css";
 import { PostModel, SessionModel } from "./model";
 import { useCreatePost } from "./postHooks";
+import { useExistingSession } from "./SessionContext";
 import Window from "./Window";
-
-// TODO introduce session context instead of passing around session
 
 export type DraftPostWindowProps = {
   onClose: () => void;
   onPost: (post: PostModel) => void;
-  session: SessionModel;
 };
 
-export default function DraftPostWindow({ onClose, onPost, session }: DraftPostWindowProps) {
+export default function DraftPostWindow({ onClose, onPost }: DraftPostWindowProps) {
+  const { session } = useExistingSession();
+
   const [imageUrl, setImageUrl] = useState("");
   const [message, setMessage] = useState("");
 

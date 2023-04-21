@@ -23,7 +23,7 @@ function AppInSessionContext() {
   if (session) {
     headerButtons = (
       <>
-        <DraftPostButton session={session} />
+        <DraftPostButton />
         <LogoutButton />
       </>
     );
