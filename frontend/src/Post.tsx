@@ -9,9 +9,8 @@ export default function Post({ id, userId, username, createdAt, imageUrl, messag
       <h3 className="Post__Title">
         @{username} posted on {createdAt.toISOString()}
       </h3>
-      <br />
       <img className="Post__Image" src={imageUrl} />
-      {message && <p className="Post__Message">{message}</p>}
+      <p className="Post__Message">{message}</p>
     </div>
   );
 }
