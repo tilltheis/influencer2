@@ -20,7 +20,7 @@ export default function DraftPostButton() {
         onClick={() => setShowWindow(true)}
         style={{ marginRight: "1rem" }}
       >
-        post <FontAwesomeIcon icon={faPenToSquare} />
+        <FontAwesomeIcon icon={faPenToSquare} /> post
       </button>
       {window}
     </div>

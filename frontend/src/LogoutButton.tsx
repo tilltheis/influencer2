@@ -12,7 +12,7 @@ export default function LogoutButton() {
   return (
     <div className="LogoutButton">
       <button className="button--asText" onClick={() => setShowWindow(true)}>
-        {session.username} <FontAwesomeIcon icon={faUser} title="Profile" />
+        <FontAwesomeIcon icon={faUser} title="Profile" /> {session.username}
       </button>
       {showWindow && (
         <LogoutWindow

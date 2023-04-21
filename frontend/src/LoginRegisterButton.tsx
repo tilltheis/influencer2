@@ -36,7 +36,7 @@ export default function LoginRegisterButton() {
   return (
     <div className="LoginRegisterButton">
       <button className="button--asText" onClick={() => setWindowStatus("showLoginWindow")}>
-        login <FontAwesomeIcon icon={faArrowRightToBracket} />
+        <FontAwesomeIcon icon={faArrowRightToBracket} /> login
       </button>
       {window}
     </div>

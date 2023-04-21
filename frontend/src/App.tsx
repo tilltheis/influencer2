@@ -1,10 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./App.css";
-import DraftPostButton from "./DraftPostButton";
-import LoginRegisterButton from "./LoginRegisterButton";
-import LogoutButton from "./LogoutButton";
+import Header from "./Header";
 import Posts from "./Posts";
-import { SessionProvider, useSession } from "./SessionContext";
+import { SessionProvider } from "./SessionContext";
 
 export default function App() {
   return (
@@ -16,33 +14,9 @@ export default function App() {
 
 function AppInSessionContext() {
   const queryClient = new QueryClient();
-  const { session } = useSession();
-
-  let headerButtons;
-
-  if (session) {
-    headerButtons = (
-      <>
-        <DraftPostButton />
-        <LogoutButton />
-      </>
-    );
-  } else {
-    headerButtons = (
-      <>
-        <LoginRegisterButton />
-      </>
-    );
-  }
-
   return (
     <QueryClientProvider client={queryClient}>
-      <header>
-        <h1>
-          <a href="/">Influencer&nbsp;2</a>
-        </h1>
-        {headerButtons}
-      </header>
+      <Header />
       <main>
         <Posts />
       </main>
