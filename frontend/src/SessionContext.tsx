@@ -1,12 +1,16 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { SessionModel } from "./model";
 
-export type SessionState = {
+export type SessionContext = {
   session: SessionModel | null;
   setSession: (newSession: SessionModel | null) => void;
 };
 
-export const SessionContext = createContext<SessionState>({ session: null, setSession: () => {} });
+const defaultSetSession = () => {};
+export const SessionContext = createContext<SessionContext>({
+  session: null,
+  setSession: defaultSetSession,
+});
 
 export type SessionProviderProps = {
   children: ReactNode;
@@ -19,8 +23,6 @@ export function SessionProvider({ children }: SessionProviderProps) {
   });
 
   useEffect(() => {
-    // This will be called once by every component that called this hook.
-    // That's OK, because the action is cheap and idempotent.
     if (session) {
       const timeout = session.expiresAtTimestamp * 1000 - Date.now().valueOf();
       // There's a max delay of ~25d in most browsers.
@@ -46,6 +48,20 @@ export function SessionProvider({ children }: SessionProviderProps) {
   return <SessionContext.Provider value={context}>{children}</SessionContext.Provider>;
 }
 
-export function useSession(): SessionState {
-  return useContext(SessionContext);
+export function useSession(): SessionContext {
+  const context = useContext(SessionContext);
+  if (context.setSession === defaultSetSession)
+    throw new Error("useSession() called outside of Session context.");
+  return context;
+}
+
+export type ExistingSessionContext = {
+  session: SessionModel;
+  setSession: (newSession: SessionModel | null) => void;
+};
+
+export function useExistingSession(): ExistingSessionContext {
+  const { session, setSession } = useSession();
+  if (!session) throw new Error("No existing session found for useExistingSession().");
+  return { session, setSession };
 }

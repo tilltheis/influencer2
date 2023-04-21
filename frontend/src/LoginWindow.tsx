@@ -2,17 +2,17 @@ import "react";
 import { ChangeEvent, FormEvent, MouseEvent, useState } from "react";
 import Alert from "./Alert";
 import "./LoginWindow.css";
-import { SessionModel } from "./model";
+import { useSession } from "./SessionContext";
 import { useCreateSession } from "./sessionHooks";
 import Window from "./Window";
 
 type LoginWindowProps = {
   onClose: () => void;
-  onLogin: (session: SessionModel) => void;
   onShowRegisterWindow: () => void;
 };
 
-export default function LoginWindow({ onClose, onLogin, onShowRegisterWindow }: LoginWindowProps) {
+export default function LoginWindow({ onClose, onShowRegisterWindow }: LoginWindowProps) {
+  const { setSession } = useSession();
   const sessionCreation = useCreateSession();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +22,7 @@ export default function LoginWindow({ onClose, onLogin, onShowRegisterWindow }: 
     sessionCreation.mutate(
       { username, password },
       {
-        onSuccess: (response) => response.type === "session" && onLogin(response),
+        onSuccess: (response) => response.type === "session" && setSession(response),
       }
     );
   }
