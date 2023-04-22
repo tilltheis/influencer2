@@ -38,7 +38,7 @@ export default function RegisterWindowContent({ onShowLoginWindow }: RegisterWin
       <label>
         Password: <input type="password" name="password" onChange={handlePasswordChanged} />
       </label>
-      <button>Create account</button>
+      <button className="button--asButton">Create account</button>
       or
       <button className="button--asLink" onClick={handleShowLoginWindowClicked}>
         Login with existing user

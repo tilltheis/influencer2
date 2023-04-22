@@ -49,6 +49,27 @@ a,
   font-size: inherit;
 }
 
+.button--asButton {
+  appearance: none;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  color: #ffffffde;
+  background: linear-gradient(#333, #292929, #292929, #333);
+  border-width: 0;
+  border: 0.1rem solid #111;
+}
+.button--asButton:not(:disabled):hover {
+  background: linear-gradient(#292929, #333, #333, #292929);
+}
+.button--asButton:not(:disabled):active {
+  background: linear-gradient(#292929, #383838, #383838, #292929);
+}
+.button--asButton:disabled {
+  color: #ffffff55;
+  background: linear-gradient(#292929, #222, #222, #292929);
+}
+
 h1,
 h2,
 h3,

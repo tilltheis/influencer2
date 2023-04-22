@@ -75,9 +75,11 @@ export default function DraftPostWindow({ onClose, onPost }: DraftPostWindowProp
           Message (opt.) <textarea onChange={(e) => setMessage(e.target.value)} />
         </label>
         {lastLoadedImageUrl == imageUrl ? (
-          <button>Publish post</button>
+          <button className="button--asButton">Publish post</button>
         ) : (
-          <button disabled>Publish post (invalid URL or image still loading)</button>
+          <button className="button--asButton" disabled>
+            Publish post (invalid URL or image still loading)
+          </button>
         )}
       </form>
     </Window>

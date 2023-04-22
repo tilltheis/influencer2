@@ -23,7 +23,7 @@ export default function LogoutWindow({ session, onClose, onLogout }: LogoutWindo
     <Window title={session.username} className="LogoutWindow" onClose={onClose}>
       <form onSubmit={handleSubmit}>
         {sessionDeletion.isError && "An unknown error occurred."}
-        <button>Logout</button>
+        <button className="button--asButton">Logout</button>
       </form>
     </Window>
   );
