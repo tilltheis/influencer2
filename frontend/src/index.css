@@ -58,3 +58,9 @@ h6,
 button {
   font-family: sans-serif;
 }
+
+input,
+button,
+textarea {
+  font-size: 1.6rem; /* no zooming in on input on mobile safari */
+}

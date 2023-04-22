@@ -1,0 +1,7 @@
+.LoginRegisterWindow .Window__Children {
+  text-align: center;
+}
+.LoginRegisterWindow .Window__Children form {
+  display: flex;
+  flex-direction: column;
+}

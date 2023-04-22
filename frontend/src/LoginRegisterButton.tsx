@@ -1,44 +1,17 @@
 import { faArrowRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import "./LoginRegisterButton.css";
-import LoginWindow from "./LoginWindow";
-import RegisterWindow from "./RegisterWindow";
+import LoginRegisterWindow from "./LoginRegisterWindow";
 
 export default function LoginRegisterButton() {
-  const [windowStatus, setWindowStatus] = useState<
-    "showNoWindow" | "showLoginWindow" | "showRegisterWindow"
-  >("showNoWindow");
-
-  let window;
-  switch (windowStatus) {
-    case "showLoginWindow":
-      window = (
-        <LoginWindow
-          onClose={() => setWindowStatus("showNoWindow")}
-          onShowRegisterWindow={() => setWindowStatus("showRegisterWindow")}
-        />
-      );
-      break;
-    case "showRegisterWindow":
-      window = (
-        <RegisterWindow
-          onClose={() => setWindowStatus("showNoWindow")}
-          onShowLoginWindow={() => setWindowStatus("showLoginWindow")}
-        />
-      );
-      break;
-    case "showNoWindow":
-      window = null;
-      break;
-  }
+  const [showWindow, setShowWindow] = useState(false);
 
   return (
     <div className="LoginRegisterButton">
-      <button className="button--asText" onClick={() => setWindowStatus("showLoginWindow")}>
+      <button className="button--asText" onClick={() => setShowWindow(true)}>
         <FontAwesomeIcon icon={faArrowRightToBracket} /> login
       </button>
-      {window}
+      {showWindow && <LoginRegisterWindow onClose={() => setShowWindow(false)} />}
     </div>
   );
 }

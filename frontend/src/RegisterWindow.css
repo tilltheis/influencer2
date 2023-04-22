@@ -1,8 +1,3 @@
-.RegisterWindow {
-  position: absolute;
-  top: -1rem;
-  right: -1rem;
-}
 .RegisterWindow .Window__Children {
   text-align: center;
 }

@@ -4,9 +4,23 @@
   border-radius: 1rem;
   padding: 1rem;
   background-color: #222;
+  z-index: 1;
+  position: fixed;
+  top: 33%;
+  left: 50%;
+  transform: translate(-50%, -33%);
+  max-width: calc(100% - 2rem);
+}
+.Window__Background {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #3339;
 }
 .Window h3 {
-  margin: 0;
+  margin: 0 0 1rem;
   padding: 0;
   text-align: center;
 }
@@ -16,4 +30,14 @@
 .Window label {
   display: flex;
   justify-content: space-between;
+}
+
+body:has(.Window) {
+  /* prevent scrolling when modal is open */
+  position: fixed;
+  inline-size: 100%;
+  overflow-y: scroll;
+}
+body:has(.Window) .Header {
+  position: absolute;
 }

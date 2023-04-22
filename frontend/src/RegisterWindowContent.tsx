@@ -5,12 +5,11 @@ import "./RegisterWindow.css";
 import { useCreateUser } from "./userHooks";
 import Window from "./Window";
 
-type RegisterWindowProps = {
-  onClose: () => void;
+type RegisterWindowContentProps = {
   onShowLoginWindow: () => void;
 };
 
-export default function RegisterWindow({ onClose, onShowLoginWindow }: RegisterWindowProps) {
+export default function RegisterWindowContent({ onShowLoginWindow }: RegisterWindowContentProps) {
   const userCreation = useCreateUser();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -56,9 +55,5 @@ export default function RegisterWindow({ onClose, onShowLoginWindow }: RegisterW
     </>
   );
 
-  return (
-    <Window title="Create Account" className="RegisterWindow" onClose={onClose}>
-      {userCreation.data?.type == "user" ? successMessage : form}
-    </Window>
-  );
+  return userCreation.data?.type == "user" ? successMessage : form;
 }
