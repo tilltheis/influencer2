@@ -1,7 +1,6 @@
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import "./DraftPostButton.css";
 import DraftPostWindow from "./DraftPostWindow";
 
 export default function DraftPostButton() {

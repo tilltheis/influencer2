@@ -29,7 +29,7 @@ export default function Window({ title, onClose, className, style, children }: W
   return (
     <div className="Window__Background" onClick={onClose}>
       <div className={`Window ${className}`} style={style} onClick={(e) => e.stopPropagation()}>
-        <h3>
+        <h3 className="Window__Title">
           {title}
           <FontAwesomeIcon
             icon={faXmark}

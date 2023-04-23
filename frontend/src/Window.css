@@ -19,17 +19,13 @@
   left: 0;
   background-color: #3339;
 }
-.Window h3 {
+.Window__Title {
   margin: 0 0 1rem;
   padding: 0;
   text-align: center;
 }
 .Window__CloseButton {
   float: right;
-}
-.Window label {
-  display: flex;
-  justify-content: space-between;
 }
 
 body:has(.Window) {

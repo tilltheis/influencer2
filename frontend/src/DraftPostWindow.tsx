@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, SyntheticEvent, useState } from "react";
 import Alert from "./Alert";
 import "./DraftPostWindow.css";
+import Input from "./Input";
 import { PostModel, SessionModel } from "./model";
 import { useCreatePost } from "./postHooks";
 import { useExistingSession } from "./SessionContext";
@@ -27,7 +28,7 @@ export default function DraftPostWindow({ onClose, onPost }: DraftPostWindowProp
   function handleImageUrlChanged(e: ChangeEvent<HTMLInputElement>) {
     const url = e.target.value;
     setImageUrl(url);
-    setValidImageUrl(httpsRegex.test(url));
+    setValidImageUrl(httpsRegex.test(url) || url === "");
   }
 
   function handleFormSubmitted(e: FormEvent) {
@@ -62,18 +63,15 @@ export default function DraftPostWindow({ onClose, onPost }: DraftPostWindowProp
         {sessionCreation.data?.type == "invalidInput" && (
           <Alert level="error">Post data validation failed. Please check your input.</Alert>
         )}
-        <label>
-          Image URL*{" "}
-          <input
-            type="url"
-            pattern="^[hH][tT][tT][pP][sS]://.+"
-            placeholder="https://"
-            onChange={handleImageUrlChanged}
-          />
-        </label>
-        <label>
-          Message (opt.) <textarea onChange={(e) => setMessage(e.target.value)} />
-        </label>
+        <Input
+          label="Image URL"
+          type="url"
+          pattern="^[hH][tT][tT][pP][sS]://.+"
+          placeholder="https://"
+          onChange={handleImageUrlChanged}
+          required
+        />
+        <Input multiline label="Message" onChange={(e) => setMessage(e.target.value)} />
         {lastLoadedImageUrl == imageUrl ? (
           <button className="button--asButton">Publish post</button>
         ) : (

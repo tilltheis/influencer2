@@ -1,0 +1,61 @@
+.Input {
+  margin: 0 0 1rem;
+  padding: 0.2rem 1rem;
+  cursor: text;
+
+  border-radius: 0.5rem;
+  font-weight: bold;
+  background-color: #272727;
+  border: 0.1rem solid #444;
+
+  font-size: 0; /* remove gap between elements */
+}
+
+.Input__Label {
+  font-size: 1.6rem;
+  font-weight: normal;
+
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem;
+
+  height: 4.5rem;
+}
+.Input--multiline .Input__Label {
+  height: 6.5rem;
+}
+
+.Input__Input {
+  font-size: 1.6rem;
+  width: 100%;
+  font-family: sans-serif;
+  border: none;
+  outline: none;
+  resize: vertical;
+
+  margin: 0;
+  padding: 0;
+
+  background-color: transparent;
+  color: inherit;
+
+  height: 2.5rem;
+
+  position: absolute;
+  left: -9999rem;
+}
+.Input--multiline .Input__Input {
+  height: 4.5rem;
+}
+
+/* non-empty input */
+.Input:has(.Input__Input:not(:placeholder-shown)) .Input__Label,
+.Input:has(.Input__Input:focus) .Input__Label {
+  font-size: 1.4rem;
+  height: 2rem;
+}
+.Input__Input:not(:placeholder-shown),
+.Input__Input:focus {
+  position: relative;
+  left: auto;
+}
