@@ -63,6 +63,20 @@ object UserAppIntegrationSpec extends ZIOSpecDefault:
           )
         yield assertTrue(response.status == Status.Ok && response.jsonBody == expectedResponseJson)
       },
+      test("returns user with correct post count if username exists") {
+        for
+          (id, auth) <- createTestUser("test-user")
+          _ <- post(!! / "posts", """{ "imageUrl": "https://example.org", "message": "test" }""").authed(auth).run
+          response <- get(!! / "users" / "test-user").run
+          expectedResponseJson = Json.Obj(
+            "id"            -> Json.Str(id.toString),
+            "username"      -> Json.Str("test-user"),
+            "postCount"     -> Json.Num(1),
+            "followerCount" -> Json.Num(0),
+            "followeeCount" -> Json.Num(0)
+          )
+        yield assertTrue(response.status == Status.Ok && response.jsonBody == expectedResponseJson)
+      },
       test("returns not found if username does not exist") {
         for
           response             <- get(!! / "users" / "test-user").run

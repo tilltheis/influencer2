@@ -7,7 +7,7 @@ import zio.{RLayer, UIO, ZIO, ZLayer}
 
 class MongoPostDao(collection: ZMongoCollection[Post]) extends PostDao:
   def createPost(post: Post): UIO[Unit] = collection.insertOne(post).orDie.unit
-  val loadPosts: UIO[Seq[Post]]      = collection.find.sort(Sort.desc("createdAt")).all.orDie.map(_.toSeq)
+  val loadPosts: UIO[Seq[Post]]         = collection.find.sort(Sort.desc("createdAt")).all.orDie.map(_.toSeq)
 
 object MongoPostDao:
   val layer: RLayer[ZMongoDatabase, MongoPostDao] = ZLayer {

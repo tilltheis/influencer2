@@ -5,3 +5,4 @@ import zio.{IO, UIO}
 trait UserDao:
   def createUser(user: User): IO[UserAlreadyExists, Unit]
   def loadUser(username: String): IO[UserNotFound.type, User]
+  def incrementPostCount(userId: UserId): IO[UserNotFound.type, Unit]
