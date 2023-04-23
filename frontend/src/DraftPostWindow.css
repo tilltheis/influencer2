@@ -12,12 +12,14 @@
 .DraftPostWindow form {
   display: flex;
   flex-direction: column;
+  row-gap: 1rem;
 }
 
 .DraftPostWindow__ImagePreview {
   width: 100%;
   aspect-ratio: 1/1;
   border: 1px solid #000;
+  border-radius: 0.5rem;
 
   position: relative;
 

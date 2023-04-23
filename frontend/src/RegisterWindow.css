@@ -1,7 +1,0 @@
-.RegisterWindow .Window__Children {
-  text-align: center;
-}
-.RegisterWindow .Window__Children form {
-  display: flex;
-  flex-direction: column;
-}

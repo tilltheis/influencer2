@@ -52,12 +52,11 @@ a,
 .button--asButton {
   appearance: none;
   padding: 0.5rem;
-  border-radius: 0.5rem;
-  font-weight: bold;
   color: #ffffffde;
   background: linear-gradient(#333, #292929, #292929, #333);
-  border-width: 0;
-  border: 0.1rem solid #111;
+  border: 0.1rem solid #444;
+  border-radius: 0.5rem;
+  height: 3.5rem;
 }
 .button--asButton:not(:disabled):hover {
   background: linear-gradient(#292929, #333, #333, #292929);

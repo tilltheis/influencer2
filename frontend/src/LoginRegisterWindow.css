@@ -1,7 +1,12 @@
+.LoginRegisterWindow {
+  min-width: 25rem;
+}
 .LoginRegisterWindow .Window__Children {
   text-align: center;
 }
+.LoginRegisterWindow .Window__Children,
 .LoginRegisterWindow .Window__Children form {
   display: flex;
   flex-direction: column;
+  row-gap: 1rem;
 }

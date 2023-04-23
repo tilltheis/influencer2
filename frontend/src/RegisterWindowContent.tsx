@@ -1,9 +1,8 @@
 import "react";
 import { ChangeEvent, FormEvent, MouseEvent, useState } from "react";
 import Alert from "./Alert";
-import "./RegisterWindow.css";
+import Input from "./Input";
 import { useCreateUser } from "./userHooks";
-import Window from "./Window";
 
 type RegisterWindowContentProps = {
   onShowLoginWindow: () => void;
@@ -32,12 +31,8 @@ export default function RegisterWindowContent({ onShowLoginWindow }: RegisterWin
       {userCreation.data?.type == "usernameUnavailable" && (
         <Alert level="error">Username unavailable.</Alert>
       )}
-      <label>
-        Username: <input type="text" name="username" onChange={handleUsernameChanged} autoFocus />
-      </label>
-      <label>
-        Password: <input type="password" name="password" onChange={handlePasswordChanged} />
-      </label>
+      <Input label="Username" onChange={handleUsernameChanged} autoFocus />
+      <Input label="Password" type="password" onChange={handlePasswordChanged} />
       <button className="button--asButton">Create account</button>
       or
       <button className="button--asLink" onClick={handleShowLoginWindowClicked}>

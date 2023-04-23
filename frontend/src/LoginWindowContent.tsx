@@ -1,6 +1,7 @@
 import "react";
 import { ChangeEvent, FormEvent, MouseEvent, useState } from "react";
 import Alert from "./Alert";
+import Input from "./Input";
 import { useSession } from "./SessionContext";
 import { useCreateSession } from "./sessionHooks";
 
@@ -37,12 +38,8 @@ export default function LoginWindowContent({ onShowRegisterWindow }: LoginWindow
       {sessionCreation.data?.type == "invalidCredentials" && (
         <Alert level="error">Invalid credentials.</Alert>
       )}
-      <label>
-        Username: <input type="text" name="username" onChange={handleUsernameChanged} autoFocus />
-      </label>
-      <label>
-        Password: <input type="password" name="password" onChange={handlePasswordChanged} />
-      </label>
+      <Input label="Username" onChange={handleUsernameChanged} autoFocus />
+      <Input label="Password" type="password" onChange={handlePasswordChanged} />
       <button className="button--asButton">Login</button>
       or
       <button className="button--asLink" onClick={handleShowRegisterWindowClicked}>
