@@ -16,7 +16,10 @@ class MongoUserDao(collection: ZMongoCollection[User]) extends UserDao:
         Update
           .setOnInsert("_id", user.id.value.toString)
           .setOnInsert("username", user.username)
-          .setOnInsert("passwordHash", user.passwordHash),
+          .setOnInsert("passwordHash", user.passwordHash)
+          .setOnInsert("postCount", 0)
+          .setOnInsert("followerCount", 0)
+          .setOnInsert("followeeCount", 0),
         FindOneAndUpdateOptions().upsert(true)
       )
       .orDie

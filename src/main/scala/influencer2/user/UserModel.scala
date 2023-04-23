@@ -4,7 +4,14 @@ import zio.{UIO, ZIO}
 
 import java.util.UUID
 
-case class User(id: UserId, username: String, passwordHash: String)
+case class User(
+    id: UserId,
+    username: String,
+    passwordHash: String,
+    postCount: Long,
+    followerCount: Long,
+    followeeCount: Long
+)
 
 opaque type UserId = UUID
 object UserId extends (UUID => UserId):
