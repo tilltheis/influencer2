@@ -31,7 +31,7 @@
   font-family: sans-serif;
   border: none;
   outline: none;
-  resize: vertical;
+  resize: none;
 
   margin: 0;
   padding: 0;
@@ -39,13 +39,12 @@
   background-color: transparent;
   color: inherit;
 
-  height: 2.5rem;
+  min-height: 2.5rem;
 
   position: absolute;
-  left: -9999rem;
 }
 .Input--multiline .Input__Input {
-  height: 4.5rem;
+  min-height: 4.5rem;
 }
 
 /* non-empty input */
@@ -57,5 +56,5 @@
 .Input__Input:not(:placeholder-shown),
 .Input__Input:focus {
   position: relative;
-  left: auto;
+  resize: vertical;
 }
