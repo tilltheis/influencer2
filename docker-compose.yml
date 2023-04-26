@@ -5,9 +5,17 @@ services:
     restart: always
     ports:
       - 27017:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+    command: >
+      bash -c "
+        chmod 400 /data/mongo.key &&
+        (sleep 3 &&
+          mongosh --eval 'rs.initiate()' &&
+          mongosh admin --eval "'"'"
+            db.createUser( { user: 'root', pwd: 'example', roles: [ { role: 'root', db: 'admin' } ] });
+            "'"'" &) &&
+        /usr/bin/mongod --bind_ip_all --replSet rs0 --keyFile /data/mongo.key"
+    volumes:
+      - ./mongo.key:/data/mongo.key
 
   mongo-express:
     image: mongo-express
@@ -17,4 +25,4 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_MONGODB_SERVER: mongo

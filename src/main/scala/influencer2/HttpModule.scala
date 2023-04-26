@@ -3,8 +3,7 @@ package influencer2
 import influencer2.http.{AppRouter, JwtCodec, PostController, SessionController, UserController}
 import influencer2.post.PostService
 import influencer2.user.UserService
-import zio.http.model.Status
-import zio.{Cause, RLayer, Scope, Trace, UIO, ULayer, ZIO, ZLayer}
+import zio.{Cause, RLayer, Trace, UIO, ULayer, ZIO, ZLayer}
 import zio.http.{Handler, HttpAppMiddleware, Request, RequestHandlerMiddleware, Response, Server}
 
 import java.util.Base64

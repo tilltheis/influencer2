@@ -20,9 +20,7 @@ object UserId extends (UUID => UserId):
   extension (id: UserId) inline def value: UUID = id
 
 object InvalidCredentials
-object UserNotFound {
-  def toException: RuntimeException = new RuntimeException("User not found.")
-}
+object UserNotFound
 case object UserCreationConflict
 
 private case class UserAlreadyExists(user: User)
