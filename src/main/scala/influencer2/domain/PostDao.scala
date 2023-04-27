@@ -1,4 +1,4 @@
-package influencer2.post
+package influencer2.domain
 
 import zio.UIO
 

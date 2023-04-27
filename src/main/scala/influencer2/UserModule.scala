@@ -1,6 +1,7 @@
 package influencer2
 
-import influencer2.user.{MongoUserDao, UserService}
+import influencer2.domain.UserService
+import influencer2.infrastructure.MongoUserDao
 import mongo4cats.zio.ZMongoDatabase
 import zio.{RLayer, ZLayer}
 

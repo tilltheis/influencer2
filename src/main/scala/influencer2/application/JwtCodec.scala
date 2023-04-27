@@ -1,4 +1,4 @@
-package influencer2.http
+package influencer2.application
 
 import zio.{IO, UIO, URLayer, ZIO, ZLayer}
 import pdi.jwt.{Jwt, JwtAlgorithm, JwtClaim, JwtHeader, JwtOptions}

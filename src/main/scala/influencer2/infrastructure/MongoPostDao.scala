@@ -1,7 +1,7 @@
-package influencer2.post
+package influencer2.infrastructure
 
-import influencer2.post.PostMongoCodec.given_MongoCodecProvider_Post
-import influencer2.user.User
+import influencer2.domain.{Post, PostDao}
+import influencer2.infrastructure.PostMongoCodec.given_MongoCodecProvider_Post
 import mongo4cats.operations.{Filter, Sort, Update}
 import mongo4cats.zio.{ZMongoClient, ZMongoCollection, ZMongoDatabase, startSessionFixed}
 import zio.{RLayer, UIO, ZIO, ZLayer}

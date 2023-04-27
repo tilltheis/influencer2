@@ -1,14 +1,12 @@
 package influencer2
 
-import influencer2.http.{AppRouter, JwtCodec, PostController, SessionController, UserController}
-import influencer2.post.{MongoPostDao, PostService}
-import influencer2.user.{MongoUserDao, UserService}
+import influencer2.application.{AppRouter, JwtCodec, PostController, SessionController, UserController}
+import influencer2.domain.{PostService, UserService}
+import influencer2.infrastructure.{MongoPostDao, MongoUserDao}
 import zio.internal.macros.LayerMacros
-import zio.{TaskLayer, ULayer, ZIO, ZLayer}
+import zio.{TaskLayer, ZIO, ZLayer}
 
-import java.util.Base64
 import javax.crypto.KeyGenerator
-import javax.crypto.spec.SecretKeySpec
 
 object TestRouter:
   val layer: TaskLayer[AppRouter] =

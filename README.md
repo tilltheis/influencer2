@@ -5,7 +5,7 @@ Another practice project that implements an Instagram style feed.
 ### Backend
 `docker-compose up` starts the database cluster that is used by the app and tests.  
 `sbt run` starts the API server on http://localhost:8080.
-The supported routes can be found in the [AppRouter](src/main/scala/influencer2/http/AppRouter.scala) and [tests](/src/test/scala/influencer2).  
+The supported routes can be found in the [AppRouter](src/main/scala/influencer2/application/AppRouter.scala) and [tests](/src/test/scala/influencer2).  
 `sbt test` runs the test suite.
 
 ### Frontend

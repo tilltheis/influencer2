@@ -1,8 +1,8 @@
-package influencer2.http
+package influencer2.application
 
-import influencer2.http.AppJsonCodec.given
-import influencer2.http.Controller.withJsonRequest
-import influencer2.post.{HttpsUrl, PostService}
+import influencer2.application.AppJsonCodec.given
+import influencer2.application.Controller.withJsonRequest
+import influencer2.domain.{HttpsUrl, PostService}
 import zio.http.model.Status
 import zio.http.{Request, Response}
 import zio.json.EncoderOps

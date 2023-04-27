@@ -1,8 +1,7 @@
 package influencer2
 
-import influencer2.http.{AppRouter, JwtCodec, PostController, SessionController, UserController}
-import influencer2.post.PostService
-import influencer2.user.UserService
+import influencer2.application.{AppRouter, JwtCodec, PostController, SessionController, UserController}
+import influencer2.domain.{PostService, UserService}
 import zio.{Cause, RLayer, Trace, UIO, ULayer, ZIO, ZLayer}
 import zio.http.{Handler, HttpAppMiddleware, Request, RequestHandlerMiddleware, Response, Server}
 

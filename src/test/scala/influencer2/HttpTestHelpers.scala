@@ -1,6 +1,6 @@
 package influencer2
 
-import influencer2.http.{AppRouter, UserResponse}
+import influencer2.application.{AppRouter, UserResponse}
 import zio.http.model.{Cookie, Header, HeaderNames, HeaderValues}
 import zio.http.*
 import zio.json.DecoderOps

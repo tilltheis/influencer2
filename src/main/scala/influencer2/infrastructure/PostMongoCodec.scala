@@ -1,6 +1,6 @@
-package influencer2.post
+package influencer2.infrastructure
 
-import influencer2.user.UserId
+import influencer2.domain.{HttpsUrl, Post, PostId, UserId}
 import mongo4cats.codecs.MongoCodecProvider
 import mongo4cats.zio.json.deriveZioJsonCodecProvider
 import zio.json.{DeriveJsonCodec, JsonCodec}

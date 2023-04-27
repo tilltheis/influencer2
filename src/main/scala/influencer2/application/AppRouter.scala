@@ -1,7 +1,7 @@
-package influencer2.http
+package influencer2.application
 
-import influencer2.http.AppJsonCodec.given_JsonCodec_SessionUser
-import influencer2.user.UserService
+import influencer2.application.AppJsonCodec.given_JsonCodec_SessionUser
+import influencer2.domain.UserService
 import zio.http.*
 import zio.http.model.Method.{DELETE, GET, POST, PUT}
 import zio.http.model.Status

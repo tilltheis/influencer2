@@ -1,7 +1,8 @@
-package influencer2.user
+package influencer2.infrastructure
 
 import com.mongodb.client.model.FindOneAndUpdateOptions
-import influencer2.user.UserMongoCodec.given_MongoCodecProvider_User
+import influencer2.domain.{User, UserAlreadyExists, UserDao, UserNotFound}
+import influencer2.infrastructure.UserMongoCodec.given_MongoCodecProvider_User
 import mongo4cats.operations.{Filter, Update}
 import mongo4cats.zio.{ZMongoCollection, ZMongoDatabase}
 import zio.{IO, RLayer, ZIO, ZLayer}

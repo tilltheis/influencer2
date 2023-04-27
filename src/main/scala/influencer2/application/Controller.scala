@@ -1,4 +1,4 @@
-package influencer2.http
+package influencer2.application
 
 import zio.http.model.Status
 import zio.{UIO, ZIO}

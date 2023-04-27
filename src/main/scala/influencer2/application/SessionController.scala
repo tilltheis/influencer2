@@ -1,10 +1,10 @@
-package influencer2.http
+package influencer2.application
 
-import influencer2.http.SessionController.UseSecureCookies
-import influencer2.http.AppJsonCodec.given
-import influencer2.http.Controller.withJsonRequest
-import influencer2.http.JwtSignatureCookieName
-import influencer2.user.UserService
+import influencer2.application.SessionController.UseSecureCookies
+import influencer2.application.AppJsonCodec.given
+import influencer2.application.Controller.withJsonRequest
+import influencer2.application.JwtSignatureCookieName
+import influencer2.domain.UserService
 import zio.http.model.{Cookie, Status}
 import zio.http.{Request, Response}
 import zio.json.{DecoderOps, EncoderOps, JsonDecoder}

@@ -1,6 +1,7 @@
 package influencer2
 
-import influencer2.post.{MongoPostDao, PostDao, PostService}
+import influencer2.domain.{PostDao, PostService}
+import influencer2.infrastructure.MongoPostDao
 import mongo4cats.zio.{ZMongoClient, ZMongoDatabase}
 import zio.{RLayer, ZLayer}
 

@@ -1,7 +1,6 @@
-package influencer2.http
+package influencer2.application
 
-import influencer2.post.PostId
-import influencer2.user.UserId
+import influencer2.domain.{PostId, UserId}
 import zio.json.{DeriveJsonCodec, DeriveJsonDecoder, DeriveJsonEncoder, JsonCodec, JsonDecoder, JsonEncoder}
 
 object AppJsonCodec:

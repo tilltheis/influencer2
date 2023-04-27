@@ -1,7 +1,6 @@
-package influencer2.http
+package influencer2.application
 
-import influencer2.post.Post
-import influencer2.user.{User, UserId}
+import influencer2.domain.{Post, User, UserId}
 
 import java.time.Instant
 import java.util.UUID

@@ -1,4 +1,4 @@
-package influencer2.user
+package influencer2.domain
 
 import zio.{UIO, ZIO}
 
@@ -23,4 +23,4 @@ object InvalidCredentials
 object UserNotFound
 case object UserCreationConflict
 
-private case class UserAlreadyExists(user: User)
+case class UserAlreadyExists(user: User)

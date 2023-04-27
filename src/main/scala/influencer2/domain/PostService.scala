@@ -1,6 +1,5 @@
-package influencer2.post
+package influencer2.domain
 
-import influencer2.user.{UserId}
 import zio.{Clock, UIO, URLayer, ZLayer}
 
 class PostService(postDao: PostDao):

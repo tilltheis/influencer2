@@ -1,12 +1,12 @@
-package influencer2.http
+package influencer2.application
 
-import influencer2.http.Controller.withJsonRequest
-import influencer2.user.UserService
+import influencer2.application.Controller.withJsonRequest
 import zio.http.model.Status
 import zio.http.{Request, Response}
 import zio.json.EncoderOps
 import zio.{UIO, URLayer, ZLayer}
 import AppJsonCodec.given
+import influencer2.domain.UserService
 
 class UserController(userService: UserService):
   def handleCreateUser(username: String, request: Request): UIO[Response] =
