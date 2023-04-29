@@ -39,7 +39,7 @@ export default function Input(props: InputProps | MultilineInputProps) {
   );
 
   const sharedProps = {
-    className: `Input__Input ${className}`,
+    className: classNames("Input__Input", className),
     placeholder,
     required,
     onFocus: (e: any) => {

@@ -9,6 +9,8 @@
   border: 0.1rem solid #444;
 
   font-size: 0; /* remove gap between elements */
+
+  position: relative;
 }
 
 .Input__Label {
@@ -42,6 +44,8 @@
   min-height: 2.5rem;
 
   position: absolute;
+  top: 0;
+  left: 0;
 }
 .Input--multiline .Input__Input {
   min-height: 4.5rem;
