@@ -16,10 +16,8 @@ lazy val root = project
       "dev.zio"              %% "zio-logging-slf4j2-bridge" % "2.1.12",
       "dev.zio"              %% "zio-test"                  % "2.0.13" % Test,
       "dev.zio"              %% "zio-test-sbt"              % "2.0.13" % Test,
-      "dev.zio"              %% "zio-test-magnolia"         % "2.0.13" % Test,
-      "io.github.kirill5k"   %% "mongo4cats-zio"            % "0.6.10",
-      "io.github.kirill5k"   %% "mongo4cats-zio-json"       % "0.6.10",
-      "io.github.kirill5k"   %% "mongo4cats-zio-embedded"   % "0.6.10" % Test,
+      "io.github.kirill5k"   %% "mongo4cats-zio"            % "0.6.11",
+      "io.github.kirill5k"   %% "mongo4cats-zio-json"       % "0.6.11",
       "org.mindrot"           % "jbcrypt"                   % "0.4",
       "com.github.jwt-scala" %% "jwt-core"                  % "9.2.0"
     ),

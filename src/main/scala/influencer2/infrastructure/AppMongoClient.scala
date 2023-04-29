@@ -1,7 +1,7 @@
 package influencer2.infrastructure
 
 import influencer2.domain.{Post, User}
-import mongo4cats.zio.{ZClientSession, ZMongoClient, ZMongoCollection, ZMongoDatabase, createSession}
+import mongo4cats.zio.{ZClientSession, ZMongoClient, ZMongoCollection, ZMongoDatabase}
 import zio.{RLayer, Scope, ZIO, ZLayer}
 import influencer2.infrastructure.PostMongoCodec.given_MongoCodecProvider_Post
 import influencer2.infrastructure.UserMongoCodec.given_MongoCodecProvider_User
