@@ -4,6 +4,7 @@
   right: 0;
   background-color: #191919;
   border-bottom: 0.1rem solid #333;
+  z-index: 9;
 }
 
 .Header__Content {
