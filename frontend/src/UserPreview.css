@@ -1,0 +1,29 @@
+.UserPreview {
+  position: absolute;
+  background-color: #181818;
+  border: 0.1rem solid #333;
+  border-radius: 0.5rem;
+  cursor: auto;
+  padding: 1rem;
+}
+
+.UserPreview h3 {
+  margin: 0;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.UserPreview dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 1rem;
+}
+.UserPreview dl,
+dt,
+dd {
+  margin: 0;
+  padding: 0;
+}
+.UserPreview dt::after {
+  content: ": ";
+}

@@ -5,7 +5,13 @@ export type SessionModel = {
   expiresAtTimestamp: number;
 };
 
-export type UserModel = { id: string; username: string };
+export type UserModel = {
+  id: string;
+  username: string;
+  postCount: number;
+  followerCount: number;
+  followeeCount: number;
+};
 
 export type PostModel = {
   id: string;

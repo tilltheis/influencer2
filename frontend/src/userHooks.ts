@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { fetchJson } from "./http";
 import { UserModel } from "./model";
 
@@ -21,4 +21,16 @@ export function useCreateUser() {
       });
     }
   );
+}
+
+export function useReadUser(username: string) {
+  return useQuery(["users", username], async (): Promise<UserModel> => {
+    return fetchJson({
+      method: "GET",
+      url: `/api/users/${username}`,
+      responseDataMapper: {
+        200: (json: any) => json, // TODO createdAt?
+      },
+    });
+  });
 }
