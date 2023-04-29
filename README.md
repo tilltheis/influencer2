@@ -24,12 +24,15 @@ The supported routes can be found in the [AppRouter](src/main/scala/influencer2/
 * React 18
 
 ## Features
-* create posts (picture + message)
-* show feed
-* like posts
-* follow other users (+notify followed user)
-* login
-* registration
+* [x] create posts (picture + message)
+* [x] show all posts
+* [ ] show user posts
+* [ ] show personal feed
+* [ ] like posts
+* [ ] follow other users
+* [ ] notify followed user
+* [x] login
+* [x] registration
 
 ## Security
 * __XSS__ protection is achieved by storing the JWT signature in an HTTP only cookie that cannot be read by the client.
