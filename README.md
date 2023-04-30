@@ -26,9 +26,9 @@ The supported routes can be found in the [AppRouter](src/main/scala/influencer2/
 ## Features
 * [x] create posts (picture + message)
 * [x] show all posts
-* [ ] show user posts
+* [ ] show user profile
 * [ ] show personal feed
-* [ ] like posts
+* [x] like posts
 * [ ] follow other users
 * [ ] notify followed user
 * [x] login
