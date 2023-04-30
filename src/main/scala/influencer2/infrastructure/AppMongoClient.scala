@@ -14,13 +14,13 @@ case class AppMongoClient(
     postCollection: ZMongoCollection[Post],
     userCollection: ZMongoCollection[User]
 ):
-  def sessionedScoped[R, E, A](zio: => ZIO[ZClientSession & R, E, A]): ZIO[Scope & R, E, A] =
+  def sessionedScoped[R, A](zio: => RIO[ZClientSession & R, A]): RIO[Scope & R, A] =
     zio.provideSomeLayer(ZLayer(underlying.createSession.orDie))
 
-  def sessioned[R, E, A](zio: => ZIO[ZClientSession & R, E, A]): ZIO[R, E, A] =
+  def sessioned[R, A](zio: => RIO[ZClientSession & R, A]): RIO[R, A] =
     ZIO.scoped(sessionedScoped(zio))
 
-  def sessionedWith[R, E, A](f: ZClientSession => ZIO[R, E, A]): ZIO[R, E, A] =
+  def sessionedWith[R, A](f: ZClientSession => RIO[R, A]): RIO[R, A] =
     ZIO.scoped(sessioned(ZIO.serviceWithZIO[ZClientSession](f)))
 
   def transactedScoped[R, A](zio: => RIO[ZClientSession & R, A]): RIO[Scope & R, A] =

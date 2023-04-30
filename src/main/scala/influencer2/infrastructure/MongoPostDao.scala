@@ -13,48 +13,53 @@ class MongoPostDao(client: AppMongoClient) extends PostDao:
   }.orDie
 
   override val loadPosts: UIO[Seq[Post]] = client.sessionedWith { session =>
-    client.postCollection.find(session).sort(Sort.desc("createdAt")).all.orDie.map(_.toSeq)
-  }
+    client.postCollection.find(session).sort(Sort.desc("createdAt")).all.map(_.toSeq)
+  }.orDie
 
-  override def loadPost(postId: PostId): IO[PostNotFound.type, Post] = client.sessionedWith { session =>
-    client.postCollection.find(session, Filter.idEq(postId.value.toString)).first.orDie.someOrFail(PostNotFound)
-  }
+  override def loadPost(postId: PostId): IO[PostNotFound.type, Post] =
+    client
+      .sessionedWith { session =>
+        client.postCollection.find(session, Filter.idEq(postId.value.toString)).first
+      }
+      .orDie
+      .someOrFail(PostNotFound)
 
   override def likePost(
       userId: UserId,
       username: String,
       postId: PostId
   ): IO[PostNotFound.type | PostAlreadyLiked.type, Unit] =
-    client.sessionedWith { session =>
-      client.postCollection
-        .updateOne(
-          session,
-          Filter.idEq(postId.value.toString),
-          Update.set(s"likes.${userId.value}", username)
-        )
-        .orDie
-        .flatMap(result =>
-          if result.getMatchedCount == 0 then ZIO.fail(PostNotFound)
-          else if result.getModifiedCount == 0 then ZIO.fail(PostAlreadyLiked)
-          else ZIO.unit
-        )
-    }
+    client
+      .sessionedWith { session =>
+        client.postCollection
+          .updateOne(
+            session,
+            Filter.idEq(postId.value.toString),
+            Update.set(s"likes.${userId.value}", username)
+          )
+      }
+      .orDie
+      .flatMap(result =>
+        if result.getMatchedCount == 0 then ZIO.fail(PostNotFound)
+        else if result.getModifiedCount == 0 then ZIO.fail(PostAlreadyLiked)
+        else ZIO.unit
+      )
 
   def unlikePost(userId: UserId, username: String, postId: PostId): IO[PostNotFound.type | PostNotLiked.type, Unit] =
-    client.sessionedWith { session =>
-      client.postCollection
-        .updateOne(
+    client
+      .sessionedWith { session =>
+        client.postCollection.updateOne(
           session,
           Filter.idEq(postId.value.toString),
           Update.unset(s"likes.${userId.value}")
         )
-        .orDie
-        .flatMap(result =>
-          if result.getMatchedCount == 0 then ZIO.fail(PostNotFound)
-          else if result.getModifiedCount == 0 then ZIO.fail(PostNotLiked)
-          else ZIO.unit
-        )
-    }
+      }
+      .orDie
+      .flatMap(result =>
+        if result.getMatchedCount == 0 then ZIO.fail(PostNotFound)
+        else if result.getModifiedCount == 0 then ZIO.fail(PostNotLiked)
+        else ZIO.unit
+      )
 
 object MongoPostDao:
   val layer: RLayer[AppMongoClient, MongoPostDao] = ZLayer.fromFunction(MongoPostDao(_))
