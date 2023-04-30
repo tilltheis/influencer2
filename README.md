@@ -12,6 +12,9 @@ The supported routes can be found in the [AppRouter](src/main/scala/influencer2/
 `cd frontend && yarn && yarn dev` starts the frontend that can be accessed via http://localhost:5173.
 
 ## Technologies
+The technologies were primarily chosen based on personal interest.
+They're not necessarily the best at solving the given problem.
+
 ### Backend
 * JVM 17
 * Scala 3
@@ -39,7 +42,7 @@ The supported routes can be found in the [AppRouter](src/main/scala/influencer2/
 * __CSRF__ protection is not necessary because the authentication token is sent via an HTTP header.
 
 ## Tests
-Because of the small size and complexity of this project, there are only HTTP router integration tests.
+Due to the small size and complexity of this project, there are only HTTP router integration tests.
 
 ## Possible Feature Extensions
 * upload media instead of only linking to it
