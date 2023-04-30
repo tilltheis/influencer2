@@ -33,13 +33,13 @@ export function useCreateSession() {
   );
 }
 
-export function useDeleteSession(authToken: string) {
+export function useDeleteSession(token: string) {
   return useMutation(
     async (): Promise<void> =>
       fetchJson({
         method: "DELETE",
         url: "/api/sessions",
-        authToken,
+        token,
         responseDataMapper: {
           200: () => {},
         },

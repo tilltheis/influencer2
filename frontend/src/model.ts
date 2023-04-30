@@ -20,4 +20,5 @@ export type PostModel = {
   createdAt: Date;
   imageUrl: string;
   message: string | null;
+  likes: { [key: string]: string }; // user id to username
 };

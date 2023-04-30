@@ -77,14 +77,14 @@ export type FetchJsonOptions<T> = {
   method: HttpVerb;
   url: string;
   headers?: { [key: string]: string };
-  authToken?: string;
+  token?: string;
   requestData?: any;
   responseDataMapper: { [key in HttpStatusCode]?: (responseData: any) => T };
 };
 
 export async function fetchJson<T>(options: FetchJsonOptions<T>): Promise<T> {
-  const authHeaders: HeadersInit = options.authToken
-    ? { Authorization: `Bearer ${options.authToken}` }
+  const authHeaders: HeadersInit = options.token
+    ? { Authorization: `Bearer ${options.token}` }
     : {};
   const contentTypeHeaders: HeadersInit = options.requestData
     ? { "Content-Type": "application/json" }
