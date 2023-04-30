@@ -27,7 +27,9 @@ class AppRouter(userController: UserController, sessionController: SessionContro
       case (Some(sessionUser), request @ PUT -> !! / "posts" / postId / "likes" / username)
           if username == sessionUser.username =>
         postController.handleLikePost(sessionUser, postId)
-      case (Some(_), request @ DELETE -> !! / "posts" / postId / "likes" / username) => dummyResponse(request)
+      case (Some(sessionUser), request @ DELETE -> !! / "posts" / postId / "likes" / username)
+          if username == sessionUser.username =>
+        postController.handleUnlikePost(sessionUser, postId)
 
       case (Some(_), request @ GET -> !! / "notifications" / username) => dummyResponse(request)
     }

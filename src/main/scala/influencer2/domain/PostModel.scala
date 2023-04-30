@@ -39,3 +39,5 @@ object HttpsUrl:
   extension (value: HttpsUrl) inline def value: URL = value
 
 case object PostNotFound
+case object PostAlreadyLiked
+case object PostNotLiked

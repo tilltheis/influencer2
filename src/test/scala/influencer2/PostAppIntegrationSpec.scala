@@ -1,7 +1,7 @@
 package influencer2
 
 import influencer2.HttpTestHelpers.{createTestUser, createTestUserAuth, parseJson}
-import influencer2.TestRequest.{get, post, put}
+import influencer2.TestRequest.{delete, get, post, put}
 import zio.{Random, ZIO}
 import zio.http.!!
 import zio.http.model.Status
@@ -170,6 +170,61 @@ object PostAppIntegrationSpec extends ZIOSpecDefault:
           postId       <- Random.nextUUID
           likeResponse <- put(!! / "posts" / postId.toString / "likes" / "test-user").authed(auth).run
         yield assertTrue(likeResponse.status == Status.NotFound)
+      },
+      test("rejects the request if path username does not match auth username") {
+        for
+          auth               <- createTestUserAuth("test-user")
+          postResponse       <- post(!! / "posts", """{ "imageUrl": "https://example.org" }""").authed(auth).run
+          postId             <- ZIO.from(postResponse.jsonBody.get(JsonCursor.field("id").isString)).map(_.value)
+          likeResponseEither <- put(!! / "posts" / postId / "likes" / "other-user").authed(auth).run.either
+        yield assertTrue(likeResponseEither.isLeft)
+      },
+      test("rejects the request if post id is not uuid") {
+        for
+          auth         <- createTestUserAuth("test-user")
+          likeResponse <- put(!! / "posts" / "foo" / "likes" / "test-user").authed(auth).run
+        yield assertTrue(likeResponse.status == Status.BadRequest)
+      }
+    ),
+    suite("DELETE /posts/$id/likes/$username")(
+      test("unlikes the post if it exists") {
+        for
+          (userId, auth)     <- createTestUser("test-user")
+          createPostResponse <- post(!! / "posts", """{ "imageUrl": "https://example.org" }""").authed(auth).run
+          postId             <- ZIO.from(createPostResponse.jsonBody.get(JsonCursor.field("id").isString)).map(_.value)
+          _                  <- put(!! / "posts" / postId / "likes" / "test-user").authed(auth).run
+          postResponseBefore <- get(!! / "posts" / postId).run
+          unlikeResponse     <- delete(!! / "posts" / postId / "likes" / "test-user").authed(auth).run
+          postResponseAfter  <- get(!! / "posts" / postId).run
+
+          likesBefore <- ZIO.from(postResponseBefore.jsonBody.get(JsonCursor.field("likes").isObject))
+          likesAfter  <- ZIO.from(postResponseAfter.jsonBody.get(JsonCursor.field("likes").isObject))
+        yield assertTrue(
+          likesBefore == Json.Obj(userId.toString -> Json.Str("test-user")) &&
+            unlikeResponse.status == Status.Ok &&
+            likesAfter.isEmpty
+        )
+      },
+      test("rejects the request if the post is not already liked") {
+        for
+          auth               <- createTestUserAuth("test-user")
+          createPostResponse <- post(!! / "posts", """{ "imageUrl": "https://example.org" }""").authed(auth).run
+          postId             <- ZIO.from(createPostResponse.jsonBody.get(JsonCursor.field("id").isString)).map(_.value)
+          _                  <- put(!! / "posts" / postId / "likes" / "test-user").authed(auth).run
+          _                  <- get(!! / "posts" / postId).run
+          _                  <- delete(!! / "posts" / postId / "likes" / "test-user").authed(auth).run
+          unlikeResponse     <- delete(!! / "posts" / postId / "likes" / "test-user").authed(auth).run
+          postResponseAfter  <- get(!! / "posts" / postId).run
+
+          likesAfter <- ZIO.from(postResponseAfter.jsonBody.get(JsonCursor.field("likes").isObject))
+        yield assertTrue(unlikeResponse.status == Status.NotFound && likesAfter.isEmpty)
+      },
+      test("rejects the request if post does not exist") {
+        for
+          auth           <- createTestUserAuth("test-user")
+          postId         <- Random.nextUUID
+          unlikeResponse <- delete(!! / "posts" / postId.toString / "likes" / "test-user").authed(auth).run
+        yield assertTrue(unlikeResponse.status == Status.NotFound)
       },
       test("rejects the request if path username does not match auth username") {
         for
