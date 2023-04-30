@@ -1,10 +1,13 @@
 package influencer2.infrastructure
 
+import com.mongodb.MongoException
 import influencer2.domain.{Post, User}
-import mongo4cats.zio.{ZClientSession, ZMongoClient, ZMongoCollection, ZMongoDatabase}
-import zio.{RLayer, Scope, ZIO, ZLayer}
 import influencer2.infrastructure.PostMongoCodec.given_MongoCodecProvider_Post
 import influencer2.infrastructure.UserMongoCodec.given_MongoCodecProvider_User
+import mongo4cats.zio.{ZClientSession, ZMongoClient, ZMongoCollection, ZMongoDatabase}
+import zio.{RIO, RLayer, Schedule, Scope, ZIO, ZLayer, durationInt}
+
+import scala.math.Ordered.orderingToOrdered
 
 case class AppMongoClient(
     underlying: ZMongoClient,
@@ -20,22 +23,30 @@ case class AppMongoClient(
   def sessionedWith[R, E, A](f: ZClientSession => ZIO[R, E, A]): ZIO[R, E, A] =
     ZIO.scoped(sessioned(ZIO.serviceWithZIO[ZClientSession](f)))
 
-  def transactedScoped[R, E, A](zio: => ZIO[ZClientSession & R, E, A]): ZIO[Scope & R, E, A] =
-    // Errors and defects are not explicitly handled because the transaction will be aborted automatically when the
-    // surrounding session is closed.
-    sessioned {
-      for
+  def transactedScoped[R, A](zio: => RIO[ZClientSession & R, A]): RIO[Scope & R, A] =
+    sessionedScoped {
+      val transaction = for
         session <- ZIO.service[ZClientSession]
-        _       <- session.startTransaction.orDie
-        result  <- zio
-        _       <- session.commitTransaction.orDie
+        _       <- session.startTransaction
+        result  <- zio.tapBoth(_ => session.abortTransaction, _ => session.commitTransaction)
       yield result
+
+      val retrySchedule =
+        Schedule.recurWhile[Throwable] {
+          case e: MongoException if e.hasErrorLabel(MongoException.TRANSIENT_TRANSACTION_ERROR_LABEL) => true
+          case _                                                                                      => false
+        } >>> Schedule.exponential(10.millis) >>> Schedule.elapsed.whileOutput(_ < 100.millis)
+
+      transaction
+        .tapErrorCause(ZIO.logWarningCause("transaction failed, maybe retrying", _))
+        .retry(retrySchedule)
+        .tapErrorCause(ZIO.logWarningCause("transaction failed, giving up", _))
     }
 
-  def transacted[R, E, A](zio: => ZIO[ZClientSession & R, E, A]): ZIO[R, E, A] =
+  def transacted[R, A](zio: => RIO[ZClientSession & R, A]): RIO[R, A] =
     ZIO.scoped(transactedScoped(zio))
 
-  def transactedWith[R, E, A](f: ZClientSession => ZIO[R, E, A]): ZIO[R, E, A] =
+  def transactedWith[R, A](f: ZClientSession => RIO[R, A]): RIO[R, A] =
     ZIO.scoped(transacted(ZIO.serviceWithZIO[ZClientSession](f)))
 end AppMongoClient
 
