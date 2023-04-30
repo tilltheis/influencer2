@@ -17,7 +17,8 @@ case class PostResponse(
     username: String,
     createdAt: Instant,
     imageUrl: String,
-    message: Option[String]
+    message: Option[String],
+    likes: Map[String, String]
 )
 object PostResponse:
   def fromPost(post: Post): PostResponse =
@@ -27,7 +28,8 @@ object PostResponse:
       post.username,
       post.createdAt,
       post.imageUrl.value.toExternalForm,
-      post.message
+      post.message,
+      post.likes.map { case (id, username) => (id.value.toString, username) }
     )
 
 case class MessageResponse(message: String)

@@ -13,7 +13,8 @@ case class Post(
     username: String,
     createdAt: Instant,
     imageUrl: HttpsUrl,
-    message: Option[String]
+    message: Option[String],
+    likes: Map[UserId, String]
 )
 
 opaque type PostId = UUID
@@ -36,3 +37,5 @@ object HttpsUrl:
   def createUnsafe(value: String): HttpsUrl =
     create(value).fold(e => throw RuntimeException(s"could not create HttpsUrl: $e"), identity)
   extension (value: HttpsUrl) inline def value: URL = value
+
+case object PostNotFound

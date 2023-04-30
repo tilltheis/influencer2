@@ -32,6 +32,7 @@ object TestRequest:
       .post(Body.fromString(jsonBody), URL(path))
       .addHeader(HeaderNames.contentType, HeaderValues.applicationJson)
   )
+  def put(path: Path): TestRequest = TestRequest(Request.put(Body.empty, URL(path)))
   def put(path: Path, jsonBody: String): TestRequest = TestRequest(
     Request
       .put(Body.fromString(jsonBody), URL(path))
@@ -58,7 +59,7 @@ object TestResponse:
   def fromResponse(response: Response): IO[Any, TestResponse] =
     for
       stringBody <- response.body.asString
-      jsonBody   <- HttpTestHelpers.parseJson(stringBody)
+      jsonBody   <- HttpTestHelpers.parseJson(stringBody).mapError(e => s"$e. String response was: $stringBody")
     yield TestResponse(response, jsonBody)
 
 case class TestAuth(token: String, signature: String)

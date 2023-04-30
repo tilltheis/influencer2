@@ -22,9 +22,11 @@ class AppRouter(userController: UserController, sessionController: SessionContro
       case (Some(user), request @ POST -> !! / "posts") => postController.handleCreatePost(user, request)
       case (_, request @ GET -> !! / "posts") if request.url.queryParams.get("username").isDefined =>
         dummyResponse(request)
-      case (_, GET -> !! / "posts")                                                  => postController.handleReadPosts
-      case (_, request @ GET -> !! / "posts" / postId)                               => dummyResponse(request)
-      case (Some(_), request @ PUT -> !! / "posts" / postId / "likes" / username)    => dummyResponse(request)
+      case (_, GET -> !! / "posts")          => postController.handleReadPosts
+      case (_, GET -> !! / "posts" / postId) => postController.handleReadPost(postId)
+      case (Some(sessionUser), request @ PUT -> !! / "posts" / postId / "likes" / username)
+          if username == sessionUser.username =>
+        postController.handleLikePost(sessionUser, postId)
       case (Some(_), request @ DELETE -> !! / "posts" / postId / "likes" / username) => dummyResponse(request)
 
       case (Some(_), request @ GET -> !! / "notifications" / username) => dummyResponse(request)

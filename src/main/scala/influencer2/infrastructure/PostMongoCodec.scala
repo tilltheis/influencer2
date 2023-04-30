@@ -16,19 +16,29 @@ object PostMongoCodec:
       username: String,
       createdAt: Instant,
       imageUrl: String,
-      message: Option[String]
+      message: Option[String],
+      likes: Map[String, String]
   ):
     // this shouldn't throw but zio-json doesn't seem to allow propagating custom errors for map/contramap
-    def toPost: Post = Post(PostId(_id), UserId(userId), username, createdAt, HttpsUrl.createUnsafe(imageUrl), message)
+    def toPost: Post = Post(
+      PostId(_id),
+      UserId(userId),
+      username,
+      createdAt,
+      HttpsUrl.createUnsafe(imageUrl),
+      message,
+      likes.map { case (id, username) => (UserId(UUID.fromString(id)), username) }
+    )
   private object MongoPost:
-    def fromPost(user: Post): MongoPost =
+    def fromPost(post: Post): MongoPost =
       MongoPost(
-        user.id.value,
-        user.userId.value,
-        user.username,
-        user.createdAt,
-        user.imageUrl.value.toExternalForm,
-        user.message
+        post.id.value,
+        post.userId.value,
+        post.username,
+        post.createdAt,
+        post.imageUrl.value.toExternalForm,
+        post.message,
+        post.likes.map { (id, username) => (id.value.toString, username) }
       )
 
   private val mongoPostCodec: JsonCodec[MongoPost] = DeriveJsonCodec.gen
