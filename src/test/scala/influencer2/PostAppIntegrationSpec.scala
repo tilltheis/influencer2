@@ -3,7 +3,7 @@ package influencer2
 import influencer2.HttpTestHelpers.{createTestUser, createTestUserAuth, parseJson}
 import influencer2.TestRequest.{delete, get, post, put}
 import zio.{Random, ZIO}
-import zio.http.!!
+import zio.http.{!!, QueryParams}
 import zio.http.model.Status
 import zio.json.ast.{Json, JsonCursor}
 import zio.test.{Spec, TestClock, ZIOSpecDefault, assertTrue, suite, test}
@@ -84,6 +84,54 @@ object PostAppIntegrationSpec extends ZIOSpecDefault:
                |  "imageUrl": "https://example.org/2_1",
                |  "likes": {}
                |}, {
+               |  "id": "$postId1_2",
+               |  "userId": "${userId1.toString}",
+               |  "username": "user1",
+               |  "createdAt": "2023-01-02T00:00:00.999Z",
+               |  "imageUrl": "https://example.org/1_2",
+               |  "likes": {}
+               |}, {
+               |  "id": "$postId1_1",
+               |  "userId": "${userId1.toString}",
+               |  "username": "user1",
+               |  "createdAt": "2023-01-01T00:00:00.999Z",
+               |  "imageUrl": "https://example.org/1_1",
+               |  "likes": {}
+               |}]
+               |""".stripMargin)
+        yield assertTrue(response.status == Status.Ok && response.jsonBody == expectedResponseJson)
+      }
+    ),
+    suite("GET /posts?username=$username")(
+      test("returns nothing if user does not exist") {
+        for
+          response             <- get(!! / "posts", QueryParams("username" -> "user1")).run
+          expectedResponseJson <- parseJson("""[]""")
+        yield assertTrue(response.status == Status.Ok && response.jsonBody == expectedResponseJson)
+      },
+      test("returns nothing if there are no posts") {
+        for
+          _                    <- createTestUser("user1")
+          response             <- get(!! / "posts", QueryParams("username" -> "user1")).run
+          expectedResponseJson <- parseJson("""[]""")
+        yield assertTrue(response.status == Status.Ok && response.jsonBody == expectedResponseJson)
+      },
+      test("returns the user's posts from latest to earliest") {
+        for
+          _                <- TestClock.setTime(Instant.parse("2023-01-01T00:00:00.999Z"))
+          (userId1, auth1) <- createTestUser("user1")
+          postResponse1_1  <- post(!! / "posts", """{ "imageUrl": "https://example.org/1_1" }""").authed(auth1).run
+          _                <- TestClock.setTime(Instant.parse("2023-01-02T00:00:00.999Z"))
+          postResponse1_2  <- post(!! / "posts", """{ "imageUrl": "https://example.org/1_2" }""").authed(auth1).run
+          _                <- TestClock.setTime(Instant.parse("2023-02-01T00:00:00.999Z"))
+          (userId2, auth2) <- createTestUser("user2")
+          postResponse2_1  <- post(!! / "posts", """{ "imageUrl": "https://example.org/2_1" }""").authed(auth2).run
+          postId1_1        <- ZIO.from(postResponse1_1.jsonBody.get(JsonCursor.field("id").isString)).map(_.value)
+          postId1_2        <- ZIO.from(postResponse1_2.jsonBody.get(JsonCursor.field("id").isString)).map(_.value)
+          postId2_1        <- ZIO.from(postResponse2_1.jsonBody.get(JsonCursor.field("id").isString)).map(_.value)
+          response         <- get(!! / "posts", QueryParams("username" -> "user1")).run
+          expectedResponseJson <- parseJson(s"""
+               |[{
                |  "id": "$postId1_2",
                |  "userId": "${userId1.toString}",
                |  "username": "user1",

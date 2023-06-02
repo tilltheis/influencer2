@@ -11,7 +11,9 @@ class PostService(postDao: PostDao):
       _ <- postDao.createPost(post)
     yield post
 
-  val readPosts: UIO[Seq[Post]] = postDao.loadPosts
+  val readAllPosts: UIO[Seq[Post]] = postDao.loadAllPosts
+
+  def readUserPosts(username: String): UIO[Seq[Post]] = postDao.loadUserPosts(username)
 
   def readPost(postId: PostId): IO[PostNotFound.type, Post] = postDao.loadPost(postId)
 

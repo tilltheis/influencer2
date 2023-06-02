@@ -26,7 +26,12 @@ class PostController(postService: PostService):
     }
 
   // this should have limit and offset
-  val handleReadPosts: UIO[Response] = postService.readPosts.map { posts =>
+  val handleReadAllPosts: UIO[Response] = postService.readAllPosts.map { posts =>
+    Response.json(posts.map(PostResponse.fromPost).toJson)
+  }
+
+  // this should have limit and offset
+  def handleReadUserPosts(username: String): UIO[Response] = postService.readUserPosts(username).map { posts =>
     Response.json(posts.map(PostResponse.fromPost).toJson)
   }
 

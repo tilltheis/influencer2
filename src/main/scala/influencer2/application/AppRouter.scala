@@ -10,6 +10,7 @@ import zio.{UIO, URLayer, ZIO, ZLayer}
 
 class AppRouter(userController: UserController, sessionController: SessionController, postController: PostController):
   private def allRoutes(sessionUserOption: Option[SessionUser]): UHttpApp = {
+    @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
     val pf: PartialFunction[(Option[SessionUser], Request), UIO[Response]] = {
       case (_, request @ PUT -> !! / "users" / username) => userController.handleCreateUser(username, request)
       case (_, GET -> !! / "users" / username)           => userController.handleReadUser(username)
@@ -21,8 +22,8 @@ class AppRouter(userController: UserController, sessionController: SessionContro
 
       case (Some(user), request @ POST -> !! / "posts") => postController.handleCreatePost(user, request)
       case (_, request @ GET -> !! / "posts") if request.url.queryParams.get("username").isDefined =>
-        dummyResponse(request)
-      case (_, GET -> !! / "posts")          => postController.handleReadPosts
+        postController.handleReadUserPosts(request.url.queryParams.get("username").get.asString)
+      case (_, GET -> !! / "posts")          => postController.handleReadAllPosts
       case (_, GET -> !! / "posts" / postId) => postController.handleReadPost(postId)
       case (Some(sessionUser), request @ PUT -> !! / "posts" / postId / "likes" / username)
           if username == sessionUser.username =>

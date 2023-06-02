@@ -12,8 +12,16 @@ class MongoPostDao(client: AppMongoClient) extends PostDao:
       &> client.postCollection.insertOne(session, post).unit
   }.orDie
 
-  override val loadPosts: UIO[Seq[Post]] = client.sessionedWith { session =>
+  override val loadAllPosts: UIO[Seq[Post]] = client.sessionedWith { session =>
     client.postCollection.find(session).sort(Sort.desc("createdAt")).all.map(_.toSeq)
+  }.orDie
+
+  override def loadUserPosts(username: String): UIO[Seq[Post]] = client.sessionedWith { session =>
+    client.postCollection
+      .find(session, Filter.eq("username", username))
+      .sort(Sort.desc("createdAt"))
+      .all
+      .map(_.toSeq)
   }.orDie
 
   override def loadPost(postId: PostId): IO[PostNotFound.type, Post] =

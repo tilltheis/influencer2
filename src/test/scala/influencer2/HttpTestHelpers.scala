@@ -26,7 +26,9 @@ case class TestRequest(request: Request):
   def run: ZIO[AppRouter, Any, TestResponse] = run("request")
 
 object TestRequest:
-  def get(path: Path): TestRequest = TestRequest(Request.get(URL(path)))
+  def get(path: Path, queryParams: QueryParams = QueryParams.empty): TestRequest = TestRequest(
+    Request.get(URL(path, queryParams = queryParams))
+  )
   def post(path: Path, jsonBody: String): TestRequest = TestRequest(
     Request
       .post(Body.fromString(jsonBody), URL(path))
