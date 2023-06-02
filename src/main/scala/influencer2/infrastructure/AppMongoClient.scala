@@ -5,6 +5,7 @@ import influencer2.domain.{Post, User}
 import influencer2.infrastructure.PostMongoCodec.given_MongoCodecProvider_Post
 import influencer2.infrastructure.UserMongoCodec.given_MongoCodecProvider_User
 import mongo4cats.zio.{ZClientSession, ZMongoClient, ZMongoCollection, ZMongoDatabase}
+import zio.Clock.ClockLive
 import zio.{RIO, RLayer, Schedule, Scope, ZIO, ZLayer, durationInt}
 
 import scala.math.Ordered.orderingToOrdered
@@ -41,6 +42,7 @@ case class AppMongoClient(
         .tapErrorCause(ZIO.logWarningCause("transaction failed, maybe retrying", _))
         .retry(retrySchedule)
         .tapErrorCause(ZIO.logWarningCause("transaction failed, giving up", _))
+        .withClock(ClockLive)
     }
 
   def transacted[R, A](zio: => RIO[ZClientSession & R, A]): RIO[R, A] =
