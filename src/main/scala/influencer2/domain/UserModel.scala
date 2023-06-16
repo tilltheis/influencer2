@@ -2,10 +2,12 @@ package influencer2.domain
 
 import zio.{UIO, ZIO}
 
+import java.time.Instant
 import java.util.UUID
 
 case class User(
     id: UserId,
+    createdAt: Instant,
     username: String,
     passwordHash: String,
     postCount: Long,

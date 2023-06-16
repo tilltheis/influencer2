@@ -16,6 +16,8 @@ export default function UserPreview({ username, tooltip }: UserPreviewProps) {
   else
     content = (
       <dl>
+        <dt>Registered</dt>
+        <dd>{user.createdAt.toISOString()}</dd>
         <dt>Posts</dt>
         <dd>{user.postCount}</dd>
         <dt>Followers</dt>

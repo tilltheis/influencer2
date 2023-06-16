@@ -7,6 +7,7 @@ export type SessionModel = {
 
 export type UserModel = {
   id: string;
+  createdAt: Date;
   username: string;
   postCount: number;
   followerCount: number;

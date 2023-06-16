@@ -3,6 +3,7 @@ package influencer2.infrastructure
 import com.mongodb.client.model.FindOneAndUpdateOptions
 import influencer2.domain.{User, UserAlreadyExists, UserDao, UserNotFound}
 import influencer2.infrastructure.UserMongoCodec.given_MongoCodecProvider_User
+import mongo4cats.bson.BsonValue
 import mongo4cats.operations.{Filter, Update}
 import mongo4cats.zio.{ZMongoCollection, ZMongoDatabase}
 import zio.{IO, RLayer, ZIO, ZLayer}
@@ -17,6 +18,8 @@ class MongoUserDao(client: AppMongoClient) extends UserDao:
             Filter.eq("username", user.username),
             Update
               .setOnInsert("_id", user.id.value.toString)
+              // this should be a mongo date type but that would make mongo codec derivation from json codec much harder...
+              .setOnInsert("createdAt", user.createdAt.toString)
               .setOnInsert("username", user.username)
               .setOnInsert("passwordHash", user.passwordHash)
               .setOnInsert("postCount", 0)

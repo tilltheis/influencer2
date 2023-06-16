@@ -1,12 +1,14 @@
 package influencer2
 
 import influencer2.HttpTestHelpers.{createTestUser, parseJson}
-import influencer2.TestRequest.{get, put, post}
+import influencer2.TestRequest.{get, post, put}
 import zio.{Random, ZIO}
 import zio.http.!!
 import zio.http.model.Status
 import zio.json.ast.Json
-import zio.test.{Spec, TestRandom, ZIOSpecDefault, assertTrue, suite, test}
+import zio.test.{Spec, TestClock, TestRandom, ZIOSpecDefault, assertTrue, suite, test}
+
+import java.time.Instant
 
 object UserAppIntegrationSpec extends ZIOSpecDefault:
   override def spec: Spec[Any, Any] = suite(getClass.getSimpleName)(
@@ -15,9 +17,11 @@ object UserAppIntegrationSpec extends ZIOSpecDefault:
         for
           id       <- Random.nextUUID
           _        <- TestRandom.feedUUIDs(id)
+          _        <- TestClock.setTime(Instant.ofEpochSecond(123456789))
           response <- put(!! / "users" / "test-user", """{ "password": "secret" }""").run
           expectedResponseJson = Json.Obj(
             "id"            -> Json.Str(id.toString),
+            "createdAt"     -> Json.Str("1973-11-29T21:33:09Z"),
             "username"      -> Json.Str("test-user"),
             "postCount"     -> Json.Num(0),
             "followerCount" -> Json.Num(0),
@@ -29,11 +33,13 @@ object UserAppIntegrationSpec extends ZIOSpecDefault:
         for
           id <- Random.nextUUID
           _  <- TestRandom.feedUUIDs(id)
+          _  <- TestClock.setTime(Instant.ofEpochSecond(123456789))
           request = put(!! / "users" / "test-user", """{ "password": "secret" }""")
           _        <- request.run
           response <- request.run
           expectedResponseJson = Json.Obj(
             "id"            -> Json.Str(id.toString),
+            "createdAt"     -> Json.Str("1973-11-29T21:33:09Z"),
             "username"      -> Json.Str("test-user"),
             "postCount"     -> Json.Num(0),
             "followerCount" -> Json.Num(0),
@@ -52,10 +58,12 @@ object UserAppIntegrationSpec extends ZIOSpecDefault:
     suite("GET /users/$username")(
       test("returns user if username exists") {
         for
+          _  <- TestClock.setTime(Instant.ofEpochSecond(123456789))
           (id, _)  <- createTestUser("test-user")
           response <- get(!! / "users" / "test-user").run
           expectedResponseJson = Json.Obj(
             "id"            -> Json.Str(id.toString),
+            "createdAt"     -> Json.Str("1973-11-29T21:33:09Z"),
             "username"      -> Json.Str("test-user"),
             "postCount"     -> Json.Num(0),
             "followerCount" -> Json.Num(0),
@@ -65,11 +73,13 @@ object UserAppIntegrationSpec extends ZIOSpecDefault:
       },
       test("returns user with correct post count if username exists") {
         for
+          _  <- TestClock.setTime(Instant.ofEpochSecond(123456789))
           (id, auth) <- createTestUser("test-user")
           _ <- post(!! / "posts", """{ "imageUrl": "https://example.org", "message": "test" }""").authed(auth).run
           response <- get(!! / "users" / "test-user").run
           expectedResponseJson = Json.Obj(
             "id"            -> Json.Str(id.toString),
+            "createdAt"     -> Json.Str("1973-11-29T21:33:09Z"),
             "username"      -> Json.Str("test-user"),
             "postCount"     -> Json.Num(1),
             "followerCount" -> Json.Num(0),

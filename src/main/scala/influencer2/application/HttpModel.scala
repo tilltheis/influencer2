@@ -34,10 +34,17 @@ object PostResponse:
 
 case class MessageResponse(message: String)
 
-case class UserResponse(id: UUID, username: String, postCount: Long, followerCount: Long, followeeCount: Long)
+case class UserResponse(
+    id: UUID,
+    createdAt: Instant,
+    username: String,
+    postCount: Long,
+    followerCount: Long,
+    followeeCount: Long
+)
 object UserResponse:
   def fromUser(user: User): UserResponse =
-    UserResponse(user.id.value, user.username, user.postCount, user.followerCount, user.followeeCount)
+    UserResponse(user.id.value, user.createdAt, user.username, user.postCount, user.followerCount, user.followeeCount)
 
 case class SessionUser(id: UUID, username: String):
   def userId: UserId = UserId(id)

@@ -1,13 +1,14 @@
 package influencer2.domain
 
 import org.mindrot.jbcrypt.BCrypt
-import zio.{IO, UIO, URLayer, ZIO, ZLayer}
+import zio.{Clock, IO, UIO, URLayer, ZIO, ZLayer}
 
 class UserService(userDao: UserDao):
   def createUser(username: String, password: String): IO[UserCreationConflict.type, User] = for
     userId       <- UserId.random
+    createdAt    <- Clock.instant
     passwordHash <- ZIO.succeedBlocking(BCrypt.hashpw(password, BCrypt.gensalt()))
-    newUser = User(userId, username, passwordHash, 0, 0, 0)
+    newUser = User(userId, createdAt, username, passwordHash, 0, 0, 0)
     user <- userDao.createUser(newUser).as(newUser).catchAll { case UserAlreadyExists(oldUser) =>
       ZIO.ifZIO(ZIO.succeedBlocking(BCrypt.checkpw(password, oldUser.passwordHash)))(
         ZIO.succeed(oldUser),

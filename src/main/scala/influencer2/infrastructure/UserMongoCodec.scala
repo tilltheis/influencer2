@@ -5,22 +5,32 @@ import mongo4cats.codecs.MongoCodecProvider
 import mongo4cats.zio.json.deriveZioJsonCodecProvider
 import zio.json.{DeriveJsonCodec, JsonCodec}
 
+import java.time.Instant
 import java.util.UUID
 
 object UserMongoCodec:
   // custom MongoUser because there doesn't seem to be a way to translate the id field to _id w/ zio-json
   private case class MongoUser(
       _id: UUID,
+      createdAt: Instant,
       username: String,
       passwordHash: String,
       postCount: Long,
       followerCount: Long,
       followeeCount: Long
   ):
-    def toUser: User = User(UserId(_id), username, passwordHash, postCount, followerCount, followeeCount)
+    def toUser: User = User(UserId(_id), createdAt, username, passwordHash, postCount, followerCount, followeeCount)
   private object MongoUser:
     def fromUser(user: User): MongoUser =
-      MongoUser(user.id.value, user.username, user.passwordHash, user.postCount, user.followerCount, user.followeeCount)
+      MongoUser(
+        user.id.value,
+        user.createdAt,
+        user.username,
+        user.passwordHash,
+        user.postCount,
+        user.followerCount,
+        user.followeeCount
+      )
 
   private val mongoUserCodec: JsonCodec[MongoUser] = DeriveJsonCodec.gen
 
