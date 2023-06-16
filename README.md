@@ -29,7 +29,7 @@ They're not necessarily the best at solving the given problem.
 ## Features
 * [x] create posts (picture + message)
 * [x] show all posts
-* [ ] show user profile
+* [x] show user profile
 * [ ] show personal feed
 * [x] like posts
 * [ ] follow other users
