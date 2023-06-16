@@ -24,12 +24,13 @@ export function useCreateUser() {
 }
 
 export function useReadUser(username: string) {
-  return useQuery(["users", username], async (): Promise<UserModel> => {
+  return useQuery(["users", username], async (): Promise<UserModel | null> => {
     return fetchJson({
       method: "GET",
       url: `/api/users/${username}`,
       responseDataMapper: {
         200: (json: any) => json, // TODO createdAt?
+        404: () => null,
       },
     });
   });

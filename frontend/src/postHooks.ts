@@ -33,11 +33,14 @@ export function useCreatePost(token: string) {
   );
 }
 
-export function useReadPosts() {
-  return useQuery(["posts"], async (): Promise<PostModel[]> => {
+export function useReadPosts(username?: string) {
+  const [queryKey, url] = username
+    ? [["posts", username], `/api/posts?username=${encodeURIComponent(username)}`]
+    : [["posts"], "/api/posts"];
+  return useQuery(queryKey, async (): Promise<PostModel[]> => {
     return fetchJson({
       method: "GET",
-      url: "/api/posts",
+      url,
       responseDataMapper: {
         200: (json: any[]) =>
           json.map((post) => ({ ...post, createdAt: new Date(post.createdAt) })),

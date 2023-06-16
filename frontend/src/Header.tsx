@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import DraftPostButton from "./DraftPostButton";
 import "./Header.css";
 import LoginRegisterButton from "./LoginRegisterButton";
@@ -28,7 +29,7 @@ export default function Header() {
     <header className="Header">
       <div className="Header__Content">
         <h1>
-          <a href="/">Influencer&nbsp;2</a>
+          <Link to="/">Influencer&nbsp;2</Link>
         </h1>
         {headerButtons}
       </div>

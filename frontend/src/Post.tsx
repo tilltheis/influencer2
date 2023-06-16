@@ -19,7 +19,7 @@ export default function Post({
   likes,
 }: PostProps) {
   const [isUserPreviewVisible, setUserPreviewVisible] = useState(false);
-  const userPreview = isUserPreviewVisible ? <UserPreview username={username} /> : null;
+  const userPreview = isUserPreviewVisible ? <UserPreview tooltip username={username} /> : null;
 
   const { session } = useSession();
 

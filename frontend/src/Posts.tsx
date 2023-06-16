@@ -2,8 +2,9 @@ import Alert from "./Alert";
 import Post from "./Post";
 import { useReadPosts } from "./postHooks";
 
-export default function Posts() {
-  const postsReading = useReadPosts();
+export type PostsProps = { username?: string };
+export default function Posts({ username }: PostsProps) {
+  const postsReading = useReadPosts(username);
 
   if (postsReading.isLoading) return <div>Loading...</div>;
   if (postsReading.isError) return <Alert level="error">An unknown error occurred.</Alert>;

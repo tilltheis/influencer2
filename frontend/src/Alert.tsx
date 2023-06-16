@@ -2,7 +2,7 @@ import { CSSProperties, ReactNode } from "react";
 import "./Alert.css";
 
 type AlertProps = {
-  level: "error" | "success";
+  level: "error" | "success" | "info";
   children: ReactNode;
   style?: CSSProperties;
 };
