@@ -21,6 +21,8 @@ export default function Post({
   const [isUserPreviewVisible, setUserPreviewVisible] = useState(false);
   const userPreview = isUserPreviewVisible ? <UserPreview tooltip username={username} /> : null;
 
+  const [isMouseDown, setMouseDown] = useState(false);
+
   const { session } = useSession();
 
   function EnabledLikeButton({ session }: { session: SessionModel }) {
@@ -57,8 +59,10 @@ export default function Post({
           className="button--asLink"
           onMouseOver={() => setUserPreviewVisible(true)}
           onMouseOut={() => setUserPreviewVisible(false)}
+          onMouseDown={() => setMouseDown(true)}
+          onMouseUp={() => setMouseDown(false)}
           onFocus={() => setUserPreviewVisible(true)}
-          onBlur={() => setUserPreviewVisible(false)}
+          onBlur={() => !isMouseDown && setUserPreviewVisible(false)} // don't blur before clicking link
           onClick={() => setUserPreviewVisible(!isUserPreviewVisible)}
         >
           @{username}
