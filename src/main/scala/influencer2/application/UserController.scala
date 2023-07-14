@@ -26,6 +26,14 @@ class UserController(userService: UserService):
         _ => Response.json(MessageResponse("user not found").toJson).setStatus(Status.NotFound),
         user => Response.json(UserResponse.fromUser(user).toJson)
       )
+
+  def handleFollowUser(followeeUsername: String, follower: SessionUser, request: Request): UIO[Response] =
+    userService
+      .followUser(followeeUsername, follower.userId, follower.username)
+      .fold(
+        _ => Response.json(MessageResponse("user not found").toJson).setStatus(Status.NotFound),
+        _ => Response.json(MessageResponse("user followed").toJson).setStatus(Status.Created)
+      )
 end UserController
 
 object UserController:

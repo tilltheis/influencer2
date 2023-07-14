@@ -17,9 +17,22 @@ object UserMongoCodec:
       passwordHash: String,
       postCount: Long,
       followerCount: Long,
-      followeeCount: Long
+      followeeCount: Long,
+      followers: Map[String, String],
+      followees: Map[String, String]
   ):
-    def toUser: User = User(UserId(_id), createdAt, username, passwordHash, postCount, followerCount, followeeCount)
+    def toUser: User =
+      User(
+        UserId(_id),
+        createdAt,
+        username,
+        passwordHash,
+        postCount,
+        followerCount,
+        followeeCount,
+        followers.map { case (id, username) => (UserId(UUID.fromString(id)), username) },
+        followees.map { case (id, username) => (UserId(UUID.fromString(id)), username) }
+      )
   private object MongoUser:
     def fromUser(user: User): MongoUser =
       MongoUser(
@@ -29,7 +42,9 @@ object UserMongoCodec:
         user.passwordHash,
         user.postCount,
         user.followerCount,
-        user.followeeCount
+        user.followeeCount,
+        user.followers.map { (id, username) => (id.value.toString, username) },
+        user.followees.map { (id, username) => (id.value.toString, username) }
       )
 
   private val mongoUserCodec: JsonCodec[MongoUser] = DeriveJsonCodec.gen

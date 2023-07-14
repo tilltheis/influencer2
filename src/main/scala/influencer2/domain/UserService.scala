@@ -8,7 +8,7 @@ class UserService(userDao: UserDao):
     userId       <- UserId.random
     createdAt    <- Clock.instant
     passwordHash <- ZIO.succeedBlocking(BCrypt.hashpw(password, BCrypt.gensalt()))
-    newUser = User(userId, createdAt, username, passwordHash, 0, 0, 0)
+    newUser = User(userId, createdAt, username, passwordHash, 0, 0, 0, Map.empty, Map.empty)
     user <- userDao.createUser(newUser).as(newUser).catchAll { case UserAlreadyExists(oldUser) =>
       ZIO.ifZIO(ZIO.succeedBlocking(BCrypt.checkpw(password, oldUser.passwordHash)))(
         ZIO.succeed(oldUser),
@@ -18,6 +18,9 @@ class UserService(userDao: UserDao):
   yield user
 
   def readUser(username: String): IO[UserNotFound.type, User] = userDao.loadUser(username)
+
+  def followUser(followeeUsername: String, followerId: UserId, followerUsername: String): IO[UserNotFound.type, Unit] =
+    userDao.followUser(followeeUsername, followerId, followerUsername)
 
   def verifyCredentials(username: String, password: String): IO[InvalidCredentials.type, User] =
     userDao.loadUser(username).orElseFail(InvalidCredentials).flatMap { user =>

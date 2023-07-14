@@ -14,6 +14,9 @@ class AppRouter(userController: UserController, sessionController: SessionContro
     val pf: PartialFunction[(Option[SessionUser], Request), UIO[Response]] = {
       case (_, request @ PUT -> !! / "users" / username) => userController.handleCreateUser(username, request)
       case (_, GET -> !! / "users" / username)           => userController.handleReadUser(username)
+      case (Some(sessionUser), request @ PUT -> !! / "users" / followeeUsername / "followers" / followerUsername)
+          if followerUsername == sessionUser.username =>
+        userController.handleFollowUser(followeeUsername, sessionUser, request)
 
       case (_, request @ POST -> !! / "sessions") => sessionController.handleCreateSession(request)
       case (Some(_), DELETE -> !! / "sessions")   => sessionController.handleDeleteSession

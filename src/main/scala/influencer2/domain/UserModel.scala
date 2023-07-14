@@ -12,7 +12,9 @@ case class User(
     passwordHash: String,
     postCount: Long,
     followerCount: Long,
-    followeeCount: Long
+    followeeCount: Long,
+    followers: Map[UserId, String],
+    followees: Map[UserId, String]
 )
 
 opaque type UserId = UUID

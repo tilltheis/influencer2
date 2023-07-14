@@ -5,7 +5,7 @@ import influencer2.TestRequest.{get, post, put}
 import zio.{Random, ZIO}
 import zio.http.!!
 import zio.http.model.Status
-import zio.json.ast.Json
+import zio.json.ast.{Json, JsonCursor}
 import zio.test.{Spec, TestClock, TestRandom, ZIOSpecDefault, assertTrue, suite, test}
 
 import java.time.Instant
@@ -25,7 +25,9 @@ object UserAppIntegrationSpec extends ZIOSpecDefault:
             "username"      -> Json.Str("test-user"),
             "postCount"     -> Json.Num(0),
             "followerCount" -> Json.Num(0),
-            "followeeCount" -> Json.Num(0)
+            "followeeCount" -> Json.Num(0),
+            "followers"     -> Json.Obj(),
+            "followees"     -> Json.Obj()
           )
         yield assertTrue(response.status == Status.Created && response.jsonBody == expectedResponseJson)
       },
@@ -43,7 +45,9 @@ object UserAppIntegrationSpec extends ZIOSpecDefault:
             "username"      -> Json.Str("test-user"),
             "postCount"     -> Json.Num(0),
             "followerCount" -> Json.Num(0),
-            "followeeCount" -> Json.Num(0)
+            "followeeCount" -> Json.Num(0),
+            "followers"     -> Json.Obj(),
+            "followees"     -> Json.Obj()
           )
         yield assertTrue(response.status == Status.Created && response.jsonBody == expectedResponseJson)
       },
@@ -58,7 +62,7 @@ object UserAppIntegrationSpec extends ZIOSpecDefault:
     suite("GET /users/$username")(
       test("returns user if username exists") {
         for
-          _  <- TestClock.setTime(Instant.ofEpochSecond(123456789))
+          _        <- TestClock.setTime(Instant.ofEpochSecond(123456789))
           (id, _)  <- createTestUser("test-user")
           response <- get(!! / "users" / "test-user").run
           expectedResponseJson = Json.Obj(
@@ -67,13 +71,15 @@ object UserAppIntegrationSpec extends ZIOSpecDefault:
             "username"      -> Json.Str("test-user"),
             "postCount"     -> Json.Num(0),
             "followerCount" -> Json.Num(0),
-            "followeeCount" -> Json.Num(0)
+            "followeeCount" -> Json.Num(0),
+            "followers"     -> Json.Obj(),
+            "followees"     -> Json.Obj()
           )
         yield assertTrue(response.status == Status.Ok && response.jsonBody == expectedResponseJson)
       },
       test("returns user with correct post count if username exists") {
         for
-          _  <- TestClock.setTime(Instant.ofEpochSecond(123456789))
+          _          <- TestClock.setTime(Instant.ofEpochSecond(123456789))
           (id, auth) <- createTestUser("test-user")
           _ <- post(!! / "posts", """{ "imageUrl": "https://example.org", "message": "test" }""").authed(auth).run
           response <- get(!! / "users" / "test-user").run
@@ -83,7 +89,9 @@ object UserAppIntegrationSpec extends ZIOSpecDefault:
             "username"      -> Json.Str("test-user"),
             "postCount"     -> Json.Num(1),
             "followerCount" -> Json.Num(0),
-            "followeeCount" -> Json.Num(0)
+            "followeeCount" -> Json.Num(0),
+            "followers"     -> Json.Obj(),
+            "followees"     -> Json.Obj()
           )
         yield assertTrue(response.status == Status.Ok && response.jsonBody == expectedResponseJson)
       },
@@ -92,6 +100,45 @@ object UserAppIntegrationSpec extends ZIOSpecDefault:
           response             <- get(!! / "users" / "test-user").run
           expectedResponseJson <- parseJson("""{ "message": "user not found" }""")
         yield assertTrue(response.status == Status.NotFound && response.jsonBody == expectedResponseJson)
+      }
+    ),
+    suite("PUT /users/$followeeUsername/followers/$followerUsername")(
+      test("adds the logged-in user to the followers of the followee") {
+        for
+          (followeeId, followeeAuth) <- createTestUser("followee-user")
+          (followerId, followerAuth) <- createTestUser("follower-user")
+          followeeResponseBefore     <- get(!! / "users" / "followee-user").run
+          followerCountBefore <- ZIO.from(
+            followeeResponseBefore.jsonBody.get(JsonCursor.field("followerCount").isNumber)
+          )
+          followersBefore <- ZIO.from(followeeResponseBefore.jsonBody.get(JsonCursor.field("followers").isObject))
+          followerResponseBefore <- get(!! / "users" / "follower-user").run
+          followeeCountBefore <- ZIO.from(
+            followerResponseBefore.jsonBody.get(JsonCursor.field("followeeCount").isNumber)
+          )
+          followeesBefore <- ZIO.from(followerResponseBefore.jsonBody.get(JsonCursor.field("followees").isObject))
+          followResponse <- put(!! / "users" / "followee-user" / "followers" / "follower-user").authed(followerAuth).run
+          followeeResponseAfter <- get(!! / "users" / "followee-user").run
+          followerCountAfter <- ZIO.from(
+            followeeResponseAfter.jsonBody.get(JsonCursor.field("followerCount").isNumber)
+          )
+          followersAfter        <- ZIO.from(followeeResponseAfter.jsonBody.get(JsonCursor.field("followers").isObject))
+          followerResponseAfter <- get(!! / "users" / "follower-user").run
+          followeeCountAfter <- ZIO.from(
+            followerResponseAfter.jsonBody.get(JsonCursor.field("followeeCount").isNumber)
+          )
+          followeesAfter <- ZIO.from(followerResponseAfter.jsonBody.get(JsonCursor.field("followees").isObject))
+        yield assertTrue(
+          followResponse.status == Status.Created &&
+            followerCountBefore == Json.Num(0) &&
+            followersBefore == Json.Obj() &&
+            followerCountAfter == Json.Num(1) &&
+            followersAfter == Json.Obj(followerId.toString -> Json.Str("follower-user")) &&
+            followeeCountBefore == Json.Num(0) &&
+            followeesBefore == Json.Obj() &&
+            followeeCountAfter == Json.Num(1) &&
+            followeesAfter == Json.Obj(followeeId.toString -> Json.Str("followee-user"))
+        )
       }
     )
   ).provide(TestRouter.layer)

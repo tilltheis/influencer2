@@ -40,11 +40,22 @@ case class UserResponse(
     username: String,
     postCount: Long,
     followerCount: Long,
-    followeeCount: Long
+    followeeCount: Long,
+    followers: Map[String, String],
+    followees: Map[String, String]
 )
 object UserResponse:
   def fromUser(user: User): UserResponse =
-    UserResponse(user.id.value, user.createdAt, user.username, user.postCount, user.followerCount, user.followeeCount)
+    UserResponse(
+      user.id.value,
+      user.createdAt,
+      user.username,
+      user.postCount,
+      user.followerCount,
+      user.followeeCount,
+      user.followers.map { (id, username) => (id.value.toString, username) },
+      user.followees.map { (id, username) => (id.value.toString, username) }
+    )
 
 case class SessionUser(id: UUID, username: String):
   def userId: UserId = UserId(id)
