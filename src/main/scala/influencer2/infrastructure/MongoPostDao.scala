@@ -1,6 +1,6 @@
 package influencer2.infrastructure
 
-import influencer2.domain.{Post, PostAlreadyLiked, PostDao, PostId, PostNotFound, PostNotLiked, UserId}
+import influencer2.domain.{Post, PostAlreadyLiked, PostDao, PostId, PostNotFound, UserId}
 import influencer2.infrastructure.PostMongoCodec.given_MongoCodecProvider_Post
 import influencer2.infrastructure.TransactionDecision.Commit
 import mongo4cats.operations.{Filter, Sort, Update}
@@ -54,7 +54,7 @@ class MongoPostDao(client: AppMongoClient) extends PostDao:
         else ZIO.unit
       )
 
-  def unlikePost(userId: UserId, username: String, postId: PostId): IO[PostNotFound.type | PostNotLiked.type, Unit] =
+  def unlikePost(userId: UserId, username: String, postId: PostId): IO[PostNotFound.type, Unit] =
     client
       .sessionedWith { session =>
         client.postCollection.updateOne(
@@ -66,7 +66,6 @@ class MongoPostDao(client: AppMongoClient) extends PostDao:
       .orDie
       .flatMap(result =>
         if result.getMatchedCount == 0 then ZIO.fail(PostNotFound)
-        else if result.getModifiedCount == 0 then ZIO.fail(PostNotLiked)
         else ZIO.unit
       )
 

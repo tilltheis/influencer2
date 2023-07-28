@@ -253,7 +253,7 @@ object PostAppIntegrationSpec extends ZIOSpecDefault:
             likesAfter.isEmpty
         )
       },
-      test("rejects the request if the post is not already liked") {
+      test("has no effect if the post is not already liked") {
         for
           auth               <- createTestUserAuth("test-user")
           createPostResponse <- post(!! / "posts", """{ "imageUrl": "https://example.org" }""").authed(auth).run
@@ -265,7 +265,7 @@ object PostAppIntegrationSpec extends ZIOSpecDefault:
           postResponseAfter  <- get(!! / "posts" / postId).run
 
           likesAfter <- ZIO.from(postResponseAfter.jsonBody.get(JsonCursor.field("likes").isObject))
-        yield assertTrue(unlikeResponse.status == Status.NotFound && likesAfter.isEmpty)
+        yield assertTrue(unlikeResponse.status == Status.Ok && likesAfter.isEmpty)
       },
       test("rejects the request if post does not exist") {
         for

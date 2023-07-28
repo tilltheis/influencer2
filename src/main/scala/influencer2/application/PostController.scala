@@ -2,7 +2,7 @@ package influencer2.application
 
 import influencer2.application.AppJsonCodec.given
 import influencer2.application.Controller.withJsonRequest
-import influencer2.domain.{HttpsUrl, PostAlreadyLiked, PostId, PostNotFound, PostNotLiked, PostService}
+import influencer2.domain.{HttpsUrl, PostAlreadyLiked, PostId, PostNotFound, PostService}
 import zio.http.model.Status
 import zio.http.{Request, Response}
 import zio.json.EncoderOps
@@ -67,8 +67,6 @@ class PostController(postService: PostService):
         .map {
           case Left(PostNotFound) =>
             Response.json(MessageResponse("post not found").toJson).setStatus(Status.NotFound)
-          case Left(PostNotLiked) =>
-            Response.json(MessageResponse("post not liked").toJson).setStatus(Status.NotFound)
           case Right(()) => Response.json(MessageResponse("post unliked").toJson).setStatus(Status.Ok)
         }
     }
