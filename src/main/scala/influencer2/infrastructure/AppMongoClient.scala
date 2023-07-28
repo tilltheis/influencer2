@@ -3,6 +3,7 @@ package influencer2.infrastructure
 import com.mongodb.MongoException
 import influencer2.domain.{Post, User}
 import influencer2.infrastructure.PostMongoCodec.given_MongoCodecProvider_Post
+import influencer2.infrastructure.TransactionDecision.{Abort, Commit}
 import influencer2.infrastructure.UserMongoCodec.given_MongoCodecProvider_User
 import mongo4cats.zio.{ZClientSession, ZMongoClient, ZMongoCollection, ZMongoDatabase}
 import zio.Clock.ClockLive
@@ -24,12 +25,20 @@ case class AppMongoClient(
   def sessionedWith[R, A](f: ZClientSession => RIO[R, A]): RIO[R, A] =
     ZIO.scoped(sessioned(ZIO.serviceWithZIO[ZClientSession](f)))
 
-  def transactedScoped[R, A](zio: => RIO[ZClientSession & R, A]): RIO[Scope & R, A] =
+  def transactedScoped[R, A](zio: => RIO[ZClientSession & R, TransactionDecision[A]]): RIO[Scope & R, A] =
     sessionedScoped {
       val transaction = for
         session <- ZIO.service[ZClientSession]
         _       <- session.startTransaction
-        result  <- zio.tapBoth(_ => session.abortTransaction, _ => session.commitTransaction)
+        result <- zio
+          .tapBoth(
+            _ => session.abortTransaction,
+            {
+              case Commit(_) => session.commitTransaction
+              case Abort(_)  => session.abortTransaction
+            }
+          )
+          .map(_.value)
       yield result
 
       val retrySchedule =
@@ -45,10 +54,10 @@ case class AppMongoClient(
         .withClock(ClockLive)
     }
 
-  def transacted[R, A](zio: => RIO[ZClientSession & R, A]): RIO[R, A] =
+  def transacted[R, A](zio: => RIO[ZClientSession & R, TransactionDecision[A]]): RIO[R, A] =
     ZIO.scoped(transactedScoped(zio))
 
-  def transactedWith[R, A](f: ZClientSession => RIO[R, A]): RIO[R, A] =
+  def transactedWith[R, A](f: ZClientSession => RIO[R, TransactionDecision[A]]): RIO[R, A] =
     ZIO.scoped(transacted(ZIO.serviceWithZIO[ZClientSession](f)))
 end AppMongoClient
 
@@ -61,3 +70,10 @@ object AppMongoClient:
       userCollection <- database.getCollectionWithCodec[User]("users")
     yield AppMongoClient(client, postCollection, userCollection)
   }
+end AppMongoClient
+
+sealed abstract class TransactionDecision[+A]:
+  def value: A
+object TransactionDecision:
+  case class Commit[A](value: A) extends TransactionDecision[A]
+  case class Abort[A](value: A)  extends TransactionDecision[A]

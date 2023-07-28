@@ -139,6 +139,45 @@ object UserAppIntegrationSpec extends ZIOSpecDefault:
             followeeCountAfter == Json.Num(1) &&
             followeesAfter == Json.Obj(followeeId.toString -> Json.Str("followee-user"))
         )
+      },
+      test("does nothing if follower already follows followee") {
+        for
+          (followeeId, followeeAuth) <- createTestUser("followee-user")
+          (followerId, followerAuth) <- createTestUser("follower-user")
+          _              <- put(!! / "users" / "followee-user" / "followers" / "follower-user").authed(followerAuth).run
+          followResponse <- put(!! / "users" / "followee-user" / "followers" / "follower-user").authed(followerAuth).run
+          followeeResponseAfter <- get(!! / "users" / "followee-user").run
+          followerCountAfter <- ZIO.from(
+            followeeResponseAfter.jsonBody.get(JsonCursor.field("followerCount").isNumber)
+          )
+          followersAfter        <- ZIO.from(followeeResponseAfter.jsonBody.get(JsonCursor.field("followers").isObject))
+          followerResponseAfter <- get(!! / "users" / "follower-user").run
+          followeeCountAfter <- ZIO.from(
+            followerResponseAfter.jsonBody.get(JsonCursor.field("followeeCount").isNumber)
+          )
+          followeesAfter <- ZIO.from(followerResponseAfter.jsonBody.get(JsonCursor.field("followees").isObject))
+        yield assertTrue(
+          followResponse.status == Status.Created &&
+            followerCountAfter == Json.Num(1) &&
+            followersAfter == Json.Obj(followerId.toString -> Json.Str("follower-user")) &&
+            followeeCountAfter == Json.Num(1) &&
+            followeesAfter == Json.Obj(followeeId.toString -> Json.Str("followee-user"))
+        )
+      },
+      test("returns not found if followee does not exist") {
+        for
+          (followerId, followerAuth) <- createTestUser("follower-user")
+          followResponse <- put(!! / "users" / "followee-user" / "followers" / "follower-user").authed(followerAuth).run
+          followerResponseAfter <- get(!! / "users" / "follower-user").run
+          followeeCountAfter <- ZIO.from(
+            followerResponseAfter.jsonBody.get(JsonCursor.field("followeeCount").isNumber)
+          )
+          followeesAfter <- ZIO.from(followerResponseAfter.jsonBody.get(JsonCursor.field("followees").isObject))
+        yield assertTrue(
+          followResponse.status == Status.NotFound &&
+            followeeCountAfter == Json.Num(0) &&
+            followeesAfter == Json.Obj()
+        )
       }
     )
   ).provide(TestRouter.layer)

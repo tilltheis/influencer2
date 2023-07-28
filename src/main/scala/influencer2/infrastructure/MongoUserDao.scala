@@ -2,6 +2,7 @@ package influencer2.infrastructure
 
 import com.mongodb.client.model.FindOneAndUpdateOptions
 import influencer2.domain.{User, UserAlreadyExists, UserDao, UserId, UserNotFound}
+import influencer2.infrastructure.TransactionDecision.{Abort, Commit}
 import influencer2.infrastructure.UserMongoCodec.given_MongoCodecProvider_User
 import mongo4cats.bson.{BsonValue, Document}
 import mongo4cats.operations.{Filter, Update}
@@ -58,14 +59,16 @@ class MongoUserDao(client: AppMongoClient) extends UserDao:
           result <- ZIO
             .from(followeeOption)
             .foldZIO(
-              _ => ZIO.left(UserNotFound),
+              _ => ZIO.succeed(TransactionDecision.Abort(Left(UserNotFound))),
               followee =>
-                client.userCollection
-                  .updateOne(
-                    session,
-                    Filter.eq("username", followerUsername),
-                    Update.set(s"followees.${followee.id.value.toString}", followeeUsername).inc("followeeCount", 1)
-                  ) *> ZIO.right(())
+                if followee.followers.contains(followerId) then ZIO.succeed(Abort(Right(())))
+                else
+                  client.userCollection
+                    .updateOne(
+                      session,
+                      Filter.eq("username", followerUsername),
+                      Update.set(s"followees.${followee.id.value.toString}", followeeUsername).inc("followeeCount", 1)
+                    ) *> ZIO.succeed(Commit(Right(())))
             )
         yield result
       }
