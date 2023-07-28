@@ -17,7 +17,7 @@ class PostService(postDao: PostDao):
 
   def readPost(postId: PostId): IO[PostNotFound.type, Post] = postDao.loadPost(postId)
 
-  def likePost(userId: UserId, username: String, postId: PostId): IO[PostNotFound.type | PostAlreadyLiked.type, Unit] =
+  def likePost(userId: UserId, username: String, postId: PostId): IO[PostNotFound.type, Unit] =
     postDao.likePost(userId, username, postId)
 
   def unlikePost(userId: UserId, username: String, postId: PostId): IO[PostNotFound.type, Unit] =

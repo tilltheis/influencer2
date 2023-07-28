@@ -8,5 +8,5 @@ trait PostDao:
   val loadAllPosts: UIO[Seq[Post]]
   def loadUserPosts(username: String): UIO[Seq[Post]]
   def loadPost(postId: PostId): IO[PostNotFound.type, Post]
-  def likePost(userId: UserId, username: String, postId: PostId): IO[PostNotFound.type | PostAlreadyLiked.type, Unit]
+  def likePost(userId: UserId, username: String, postId: PostId): IO[PostNotFound.type, Unit]
   def unlikePost(userId: UserId, username: String, postId: PostId): IO[PostNotFound.type, Unit]
